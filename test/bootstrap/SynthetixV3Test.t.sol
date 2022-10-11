@@ -38,6 +38,8 @@ import "@synthetixio/router/Router.sol";
 import {AggregatorV3Mock} from "@synthetixio/synthetix-main/contracts/mocks/AggregatorV3Mock.sol";
 import {MockMarket} from "@synthetixio/synthetix-main/contracts/mocks/MockMarket.sol";
 
+import { IAggregatorV3Interface } from "@synthetixio/synthetix-main/contracts/interfaces/external/IAggregatorV3Interface.sol";
+
 contract SynthetixV3Test is Test {
     SNXTokenRouter internal snxRouter = new SNXTokenRouter();
     USDTokenRouter internal usdRouter = new USDTokenRouter();
@@ -67,6 +69,8 @@ contract SynthetixV3Test is Test {
     Proxy coreProxy;
 
     MockMarket market;
+
+    mapping(address => IAggregatorV3Interface) internal aggregators;
 
     function _bootstrap() internal {
         coreProxy = new Proxy(address(new Router()));
@@ -119,18 +123,19 @@ contract SynthetixV3Test is Test {
             "USDToken", "Synthetic USD Token v3", "snxUSD", 18, address(usdRouter)
         );
 
-        // mock aggregator
-        AggregatorV3Mock snxAggregator = new AggregatorV3Mock();
-        snxAggregator.mockSetCurrentPrice(1 ether);
-
         // bootstrap
         (address snxProxy,) = associatedSystemsModule.getAssociatedSystem("SNXToken");
         (address esnxProxy,) = associatedSystemsModule.getAssociatedSystem("ESNXToken");
-        (address usdProxy,) = associatedSystemsModule.getAssociatedSystem("ESNXToken");
+        (address usdProxy,) = associatedSystemsModule.getAssociatedSystem("USDToken");
 
         snx = SNXTokenModule(snxProxy);
         esnx = ESNXTokenModule(esnxProxy);
         usd = USDTokenModule(usdProxy);
+
+
+        AggregatorV3Mock snxAggregator = new AggregatorV3Mock();
+        snxAggregator.mockSetCurrentPrice(1 ether);
+        aggregators[address(snx)] = IAggregatorV3Interface(snxAggregator);
 
         collateralModule.configureCollateral(address(snx), address(snxAggregator), 5 ether, 1.5 ether, 20 ether, true);
         utilsModule.mintInitialSystemToken(address(this), 1e6 ether);
