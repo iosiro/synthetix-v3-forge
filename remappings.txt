@@ -1,1 +1,4 @@
-@synthetixio/=src/
+@synthetixio/core-contracts=synthetix-v3/utils/core-contracts
+@synthetixio/core-modules=synthetix-v3/utils/core-modules
+@synthetixio/main=synthetix-v3/protocol/synthetix
+@synthetixio/oracle-manager=synthetix-v3/protocol/oracle-manager

@@ -1,24 +1,19 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
-import "./Modules.sol";
+
 // --------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------
 // GENERATED CODE - do not edit manually!!
 // --------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------
 
-contract AccountTokenRouter {
+contract AccountRouter {
     error UnknownSelector(bytes4 sel);
 
+    address private constant _INITIAL_MODULE_BUNDLE = 0x5c19Dccd13387AED2a92B95dA156670C3B5718dB;
+    address private constant _ACCOUNT_TOKEN_MODULE = 0x6eB4aAa88B6Ff451dF098fc7Bbf21c18D1a9bcF1;
+    
     fallback() external payable {
-        _forward();
-    }
-
-    receive() external payable {
-        _forward();
-    }
-
-    function _forward() internal {
         // Lookup table: Function selector => implementation contract
         bytes4 sig4 = msg.sig;
         address implementation;
@@ -34,39 +29,39 @@ contract AccountTokenRouter {
                         case 0x06fdde03 { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.name()
                         case 0x081812fc { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.getApproved()
                         case 0x095ea7b3 { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.approve()
-                        case 0x1627540c { result := _OWNER_MODULE } // OwnerModule.nominateNewOwner()
+                        case 0x1627540c { result := _INITIAL_MODULE_BUNDLE } // InitialModuleBundle.nominateNewOwner()
                         case 0x18160ddd { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.totalSupply()
                         case 0x23b872dd { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.transferFrom()
                         case 0x2f745c59 { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.tokenOfOwnerByIndex()
                         leave
                     }
                     switch sig
-                    case 0x35eb2824 { result := _OWNER_MODULE } // OwnerModule.isOwnerModuleInitialized()
-                    case 0x3659cfe6 { result := _UPGRADE_MODULE } // UpgradeModule.upgradeTo()
+                    case 0x35eb2824 { result := _INITIAL_MODULE_BUNDLE } // InitialModuleBundle.isOwnerModuleInitialized()
+                    case 0x3659cfe6 { result := _INITIAL_MODULE_BUNDLE } // InitialModuleBundle.upgradeTo()
                     case 0x392e53cd { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.isInitialized()
                     case 0x40c10f19 { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.mint()
                     case 0x42842e0e { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.safeTransferFrom()
                     case 0x4f6ccce7 { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.tokenByIndex()
-                    case 0x53a47bb7 { result := _OWNER_MODULE } // OwnerModule.nominatedOwner()
+                    case 0x53a47bb7 { result := _INITIAL_MODULE_BUNDLE } // InitialModuleBundle.nominatedOwner()
                     leave
                 }
                 if lt(sig,0xa22cb465) {
                     switch sig
-                    case 0x624bd96d { result := _OWNER_MODULE } // OwnerModule.initializeOwnerModule()
+                    case 0x624bd96d { result := _INITIAL_MODULE_BUNDLE } // InitialModuleBundle.initializeOwnerModule()
                     case 0x6352211e { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.ownerOf()
                     case 0x70a08231 { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.balanceOf()
-                    case 0x718fe928 { result := _OWNER_MODULE } // OwnerModule.renounceNomination()
-                    case 0x79ba5097 { result := _OWNER_MODULE } // OwnerModule.acceptOwnership()
-                    case 0x8da5cb5b { result := _OWNER_MODULE } // OwnerModule.owner()
+                    case 0x718fe928 { result := _INITIAL_MODULE_BUNDLE } // InitialModuleBundle.renounceNomination()
+                    case 0x79ba5097 { result := _INITIAL_MODULE_BUNDLE } // InitialModuleBundle.acceptOwnership()
+                    case 0x8da5cb5b { result := _INITIAL_MODULE_BUNDLE } // InitialModuleBundle.owner()
                     case 0x95d89b41 { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.symbol()
                     leave
                 }
                 switch sig
                 case 0xa22cb465 { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.setApprovalForAll()
                 case 0xa6487c53 { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.initialize()
-                case 0xaaf10f42 { result := _UPGRADE_MODULE } // UpgradeModule.getImplementation()
+                case 0xaaf10f42 { result := _INITIAL_MODULE_BUNDLE } // InitialModuleBundle.getImplementation()
                 case 0xb88d4fde { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.safeTransferFrom()
-                case 0xc7f62cda { result := _UPGRADE_MODULE } // UpgradeModule.simulateUpgradeTo()
+                case 0xc7f62cda { result := _INITIAL_MODULE_BUNDLE } // InitialModuleBundle.simulateUpgradeTo()
                 case 0xc87b56dd { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.tokenURI()
                 case 0xe985e9c5 { result := _ACCOUNT_TOKEN_MODULE } // AccountTokenModule.isApprovedForAll()
                 leave
