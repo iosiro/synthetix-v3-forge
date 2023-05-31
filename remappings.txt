@@ -1,0 +1,6 @@
+
+@synthetixio/main/=src/protocol/synthetix/
+@synthetixio/core-contracts/=src/utils/core-contracts/
+@synthetixio/core-modules/=src/utils/core-modules/
+@synthetixio/oracle-manager/=src/protocol/oracle-manager/
+@synthetixio/spot-market/=src/markets/spot-market/
