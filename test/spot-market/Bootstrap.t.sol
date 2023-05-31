@@ -58,22 +58,41 @@ contract SpotMarketBootstrap is SpotMarketDeployment  {
         // Single Pool
         uint128 poolId = 1;
         PoolModule(synthetixV3).createPool(1, address(this));
+        PoolModule(synthetixV3).createPool(2, address(this));
 
-        bytes32[] memory tokenNames = new bytes32[](3);
+        bytes32[] memory tokenNames = new bytes32[](10);
         tokenNames[0] = "ETH";
         tokenNames[1] = "BTC";
         tokenNames[2] = "LINK";
-        uint[] memory prices = new uint[](3);
+        tokenNames[3] = "BNB";
+        tokenNames[4] = "SOL";
+        tokenNames[5] = "ADA";
+        tokenNames[6] = "DOGE";
+        tokenNames[7] = "AAVE";
+        tokenNames[8] = "AVAX";
+        tokenNames[9] = "UNI";
+
+        uint[] memory prices = new uint[](10);
         prices[0] = 1000 ether;
         prices[1] = 50_000 ether;
         prices[2] = 20 ether;
+        prices[3] = 500 ether;
+        prices[4] = 100 ether;
+        prices[5] = 2 ether;
+        prices[6] = 0.1 ether;
+        prices[7] = 200 ether;
+        prices[8] = 50 ether;
+        prices[9] = 20 ether;
 
-        createTokensAndSpotMarkets(accountId, poolId, tokenNames, tokenNames, prices);     
+        uint128[] memory poolIds = new uint128[](2);
+        poolIds[0] = 1;
+        poolIds[1] = 2;
+        createTokensAndSpotMarkets(accountId, poolIds, tokenNames, tokenNames, prices);     
     }
 
 
 
-    function createTokensAndSpotMarkets(uint128 accountId, uint128 poolId, bytes32[] memory tokenName, bytes32[] memory tokenSymbol, uint[] memory prices) internal {
+    function createTokensAndSpotMarkets(uint128 accountId, uint128[] memory poolIds, bytes32[] memory tokenName, bytes32[] memory tokenSymbol, uint[] memory prices) internal {
         require(tokenName.length == tokenSymbol.length, "tokenName and tokenSymbol must be the same length");
         require(tokenName.length == prices.length, "tokenName and prices must be the same length");
         uint128[] memory marketIds = new uint128[](tokenName.length);
@@ -100,8 +119,13 @@ contract SpotMarketBootstrap is SpotMarketDeployment  {
                 
                 
                 collateral.approve(synthetixV3, 100 ether);
-                CollateralModule(synthetixV3).deposit(accountId, address(collateral), 100 ether);
-                VaultModule(synthetixV3).delegateCollateral(accountId, poolId, address(collateral), 100 ether, 1 ether);
+                uint256 depositAmount =  100 ether / poolIds.length;
+                
+                for (uint j = 0; j < poolIds.length; j++) {
+                    CollateralModule(synthetixV3).deposit(accountId, address(collateral), depositAmount);
+                    VaultModule(synthetixV3).delegateCollateral(accountId, poolIds[j], address(collateral), depositAmount, 1 ether);
+                }
+                
 
                 tokenInfo[tokenName[i]] = TokenInfo({
                     token: IERC20(address(collateral)),
@@ -131,8 +155,9 @@ contract SpotMarketBootstrap is SpotMarketDeployment  {
                 });
             }       
         }
-
-        PoolModule(synthetixV3).setPoolConfiguration(poolId, configs);   
+        for (uint i = 0; i < poolIds.length; i++) {
+            PoolModule(synthetixV3).setPoolConfiguration(poolIds[i], configs); 
+        }          
     }
 
    

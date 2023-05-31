@@ -5,6 +5,8 @@ import { SpotMarketBootstrap} from "./Bootstrap.t.sol";
 
 import "test/deployments/Modules.t.sol";
 
+import "forge-std/console2.sol";
+
 contract AtomicOrderTests is SpotMarketBootstrap {
     function setUp() public override virtual {
         super.setUp();
@@ -23,8 +25,15 @@ contract AtomicOrderTests is SpotMarketBootstrap {
         // Check that the order was filled
         assertGe(tokenInfo["sETH"].token.balanceOf(address(this)), 0.24 ether);
 
+        tokenInfo["sETH"].aggregator.mockSetCurrentPrice(4000 ether);
         snxUSD.approve(address(synthetixV3), 500 ether);
         IssueUSDModule(synthetixV3).burnUsd(accountId, 1, address(tokenInfo["ETH"].token), 1 ether);
+
+        console2.log("ETH VaultDebt", VaultModule(synthetixV3).getVaultDebt(1, address(tokenInfo["ETH"].token)));
+        console2.log("BTC VaultDebt", VaultModule(synthetixV3).getVaultDebt(1, address(tokenInfo["BTC"].token)));
+        console2.log("LINK VaultDebt", VaultModule(synthetixV3).getVaultDebt(1, address(tokenInfo["LINK"].token)));
+
+
     }
 
     function onERC721Received(
