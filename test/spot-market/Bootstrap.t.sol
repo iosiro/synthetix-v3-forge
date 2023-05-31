@@ -55,62 +55,84 @@ contract SpotMarketBootstrap is SpotMarketDeployment  {
         });
         traders.push(address(this));
         
-        // Setup a ETH collateral vault and pool
-        {
-            CollateralMock collateral = new CollateralMock();
-            collateral.mint(address(this), 1_000_000 ether);
+        // Single Pool
+        uint128 poolId = 1;
+        PoolModule(synthetixV3).createPool(1, address(this));
 
-            uint128 poolId = 1;
-            (bytes32 oracleNodeId, AggregatorV3Mock aggregator) = createOracleNode(2000 ether); // 2000 USD per ETH
-            CollateralConfigurationModule(synthetixV3).configureCollateral(CollateralConfiguration.Data({
-                tokenAddress: address(collateral),
-                depositingEnabled: true,
-                oracleNodeId: oracleNodeId,
-                issuanceRatioD18: 5 ether,
-                liquidationRatioD18: 1.5 ether,
-                liquidationRewardD18: 20 ether,
-                minDelegationD18: 20 ether
-            }));
-            PoolModule(synthetixV3).createPool(poolId, address(this));
-            
-            collateral.approve(synthetixV3, 100 ether);
-            CollateralModule(synthetixV3).deposit(accountId, address(collateral), 100 ether);
-            VaultModule(synthetixV3).delegateCollateral(accountId, poolId, address(collateral), 100 ether, 1 ether);
+        bytes32[] memory tokenNames = new bytes32[](3);
+        tokenNames[0] = "ETH";
+        tokenNames[1] = "BTC";
+        tokenNames[2] = "LINK";
+        uint[] memory prices = new uint[](3);
+        prices[0] = 1000 ether;
+        prices[1] = 50_000 ether;
+        prices[2] = 20 ether;
 
-            tokenInfo["ETH"] = TokenInfo({
-                token: IERC20(address(collateral)),
-                oracleNodeId: oracleNodeId,
-                aggregator: aggregator,
-                spotMarketId: 0
-            });
+        createTokensAndSpotMarkets(accountId, poolId, tokenNames, tokenNames, prices);     
+    }
+
+
+
+    function createTokensAndSpotMarkets(uint128 accountId, uint128 poolId, bytes32[] memory tokenName, bytes32[] memory tokenSymbol, uint[] memory prices) internal {
+        require(tokenName.length == tokenSymbol.length, "tokenName and tokenSymbol must be the same length");
+        require(tokenName.length == prices.length, "tokenName and prices must be the same length");
+        uint128[] memory marketIds = new uint128[](tokenName.length);
+
+        MarketConfiguration.Data[] memory configs = new MarketConfiguration.Data[](tokenName.length);
+
+        for (uint i = 0 ; i < tokenName.length; i++) {
+            // Setup a collateral vault and pool
+            {
+                CollateralMock collateral = new CollateralMock();
+                collateral.mint(address(this), 1_000_000 ether);
+
+                
+                (bytes32 oracleNodeId, AggregatorV3Mock aggregator) = createOracleNode(prices[i]); 
+                CollateralConfigurationModule(synthetixV3).configureCollateral(CollateralConfiguration.Data({
+                    tokenAddress: address(collateral),
+                    depositingEnabled: true,
+                    oracleNodeId: oracleNodeId,
+                    issuanceRatioD18: 5 ether,
+                    liquidationRatioD18: 1.5 ether,
+                    liquidationRewardD18: 20 ether,
+                    minDelegationD18: 20 ether
+                }));
+                
+                
+                collateral.approve(synthetixV3, 100 ether);
+                CollateralModule(synthetixV3).deposit(accountId, address(collateral), 100 ether);
+                VaultModule(synthetixV3).delegateCollateral(accountId, poolId, address(collateral), 100 ether, 1 ether);
+
+                tokenInfo[tokenName[i]] = TokenInfo({
+                    token: IERC20(address(collateral)),
+                    oracleNodeId: oracleNodeId,
+                    aggregator: aggregator,
+                    spotMarketId: 0
+                });
+            }
+
+            {
+                marketIds[i] = SpotMarketFactoryModule(spotMarkets).createSynth(string(abi.encodePacked("s", tokenName[i])), string(abi.encodePacked("s", tokenSymbol[i])), address(this));
+                IERC20 synth = IERC20(SpotMarketFactoryModule(spotMarkets).getSynth(marketIds[i]));
+                MarketCollateralModule(synthetixV3).configureMaximumMarketCollateral(marketIds[i], address(tokenInfo[tokenName[i]].token), type(uint256).max);
+                (bytes32 oracleNodeId, AggregatorV3Mock aggregator) = createOracleNode(prices[i]);
+                SpotMarketFactoryModule(spotMarkets).updatePriceData(marketIds[i], oracleNodeId, oracleNodeId); // Buy/Sell the same
+                tokenInfo[bytes32(abi.encodePacked("s", tokenName[i]))] = TokenInfo({
+                    token: synth,
+                    oracleNodeId: oracleNodeId,
+                    aggregator: aggregator,
+                    spotMarketId: marketIds[i]
+                });
+
+                configs[i] = MarketConfiguration.Data({
+                    marketId: marketIds[i],
+                    weightD18: 1 ether,
+                    maxDebtShareValueD18: 1 ether
+                });
+            }       
         }
 
-        // Setup ETH Spot Market
-        {
-
-            uint128 marketId = SpotMarketFactoryModule(spotMarkets).createSynth("sETH", "sETH", address(this));
-            IERC20 sETH = IERC20(SpotMarketFactoryModule(spotMarkets).getSynth(marketId));
-            MarketCollateralModule(synthetixV3).configureMaximumMarketCollateral(marketId, address(tokenInfo["ETH"].token), type(uint256).max);
-            (bytes32 oracleNodeId, AggregatorV3Mock aggregator) = createOracleNode(2000 ether);
-            SpotMarketFactoryModule(spotMarkets).updatePriceData(marketId, oracleNodeId, oracleNodeId); // Buy/Sell the same
-            tokenInfo["sETH"] = TokenInfo({
-                token: sETH,
-                oracleNodeId: oracleNodeId,
-                aggregator: aggregator,
-                spotMarketId: marketId
-            });
-
-           
-            MarketConfiguration.Data[] memory configs = new MarketConfiguration.Data[](1);
-            configs[0] = MarketConfiguration.Data({
-                marketId: marketId,
-                weightD18: 1 ether,
-                maxDebtShareValueD18: 1 ether
-            });
-            PoolModule(synthetixV3).setPoolConfiguration(1, configs);
-        }
-
-      
+        PoolModule(synthetixV3).setPoolConfiguration(poolId, configs);   
     }
 
    
