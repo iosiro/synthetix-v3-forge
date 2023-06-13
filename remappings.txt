@@ -1,6 +1,9 @@
 
-@synthetixio/main/=src/protocol/synthetix/
-@synthetixio/core-contracts/=src/utils/core-contracts/
-@synthetixio/core-modules/=src/utils/core-modules/
-@synthetixio/oracle-manager/=src/protocol/oracle-manager/
-@synthetixio/spot-market/=src/markets/spot-market/
+@synthetixio/main/contracts/=src/protocol/synthetix/
+@synthetixio/core-contracts/contracts/=src/utils/core-contracts/
+@synthetixio/core-modules/contracts/=src/utils/core-modules/
+@synthetixio/oracle-manager/contracts/=src/protocol/oracle-manager/
+@synthetixio/spot-market/contracts/=src/markets/spot-market/
+@synthetixio/legacy-market/contracts/=src/markets/legacy-market/
+@synthetixio/perps-market/contracts/=src/markets/perps-market/
+synthetix/contracts/=src/v2/
