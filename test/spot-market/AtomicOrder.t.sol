@@ -30,10 +30,6 @@ contract AtomicOrderTests is SpotMarketBootstrap {
         IssueUSDModule(synthetixV3).burnUsd(accountId, 1, address(tokenInfo["ETH"].token), 1 ether);
 
         console2.log("ETH VaultDebt", VaultModule(synthetixV3).getVaultDebt(1, address(tokenInfo["ETH"].token)));
-        console2.log("BTC VaultDebt", VaultModule(synthetixV3).getVaultDebt(1, address(tokenInfo["BTC"].token)));
-        console2.log("LINK VaultDebt", VaultModule(synthetixV3).getVaultDebt(1, address(tokenInfo["LINK"].token)));
-
-
     }
 
     function onERC721Received(

@@ -15,6 +15,8 @@ import { CollateralConfiguration } from "@synthetixio/main/contracts/modules/cor
 import { NodeDefinition } from "@synthetixio/oracle-manager/contracts/modules/NodeModule.sol";
 import { MarketConfiguration } from "@synthetixio/main/contracts/modules/core/PoolModule.sol";
 
+
+import "forge-std/console2.sol";
 import { IERC20 } from "forge-std/interfaces/IERC20.sol";
 
 contract SpotMarketBootstrap is SpotMarketDeployment  {
@@ -54,45 +56,24 @@ contract SpotMarketBootstrap is SpotMarketDeployment  {
             accountId: accountId
         });
         traders.push(address(this));
+
+        uint numberOfMarkets = 50;
+        uint numberOfPools = 20;
+
+        uint128[] memory poolIds = getPoolIdsArray(numberOfPools);
+        bytes32[] memory tokenName =  getTokenNamesArray(numberOfMarkets);
+        uint[] memory prices = getPricesArray(numberOfMarkets);
         
-        // Single Pool
-        uint128 poolId = 1;
-        PoolModule(synthetixV3).createPool(1, address(this));
-        PoolModule(synthetixV3).createPool(2, address(this));
-
-        bytes32[] memory tokenNames = new bytes32[](10);
-        tokenNames[0] = "ETH";
-        tokenNames[1] = "BTC";
-        tokenNames[2] = "LINK";
-        tokenNames[3] = "BNB";
-        tokenNames[4] = "SOL";
-        tokenNames[5] = "ADA";
-        tokenNames[6] = "DOGE";
-        tokenNames[7] = "AAVE";
-        tokenNames[8] = "AVAX";
-        tokenNames[9] = "UNI";
-
-        uint[] memory prices = new uint[](10);
-        prices[0] = 1000 ether;
-        prices[1] = 50_000 ether;
-        prices[2] = 20 ether;
-        prices[3] = 500 ether;
-        prices[4] = 100 ether;
-        prices[5] = 2 ether;
-        prices[6] = 0.1 ether;
-        prices[7] = 200 ether;
-        prices[8] = 50 ether;
-        prices[9] = 20 ether;
-
-        uint128[] memory poolIds = new uint128[](2);
-        poolIds[0] = 1;
-        poolIds[1] = 2;
-        createTokensAndSpotMarkets(accountId, poolIds, tokenNames, tokenNames, prices);     
+        createTokensAndSpotMarkets(accountId, poolIds, tokenName, tokenName, prices);     
     }
 
-
-
-    function createTokensAndSpotMarkets(uint128 accountId, uint128[] memory poolIds, bytes32[] memory tokenName, bytes32[] memory tokenSymbol, uint[] memory prices) internal {
+    function createTokensAndSpotMarkets(
+        uint128 accountId,
+        uint128[] memory poolIds,
+        bytes32[] memory tokenName,
+        bytes32[] memory tokenSymbol,
+        uint[] memory prices
+    ) internal {
         require(tokenName.length == tokenSymbol.length, "tokenName and tokenSymbol must be the same length");
         require(tokenName.length == prices.length, "tokenName and prices must be the same length");
         uint128[] memory marketIds = new uint128[](tokenName.length);
@@ -105,7 +86,6 @@ contract SpotMarketBootstrap is SpotMarketDeployment  {
                 CollateralMock collateral = new CollateralMock();
                 collateral.mint(address(this), 1_000_000 ether);
 
-                
                 (bytes32 oracleNodeId, AggregatorV3Mock aggregator) = createOracleNode(prices[i]); 
                 CollateralConfigurationModule(synthetixV3).configureCollateral(CollateralConfiguration.Data({
                     tokenAddress: address(collateral),
@@ -113,8 +93,8 @@ contract SpotMarketBootstrap is SpotMarketDeployment  {
                     oracleNodeId: oracleNodeId,
                     issuanceRatioD18: 5 ether,
                     liquidationRatioD18: 1.5 ether,
-                    liquidationRewardD18: 20 ether,
-                    minDelegationD18: 20 ether
+                    liquidationRewardD18: 5 ether,
+                    minDelegationD18: 5 ether
                 }));
                 
                 
@@ -166,5 +146,164 @@ contract SpotMarketBootstrap is SpotMarketDeployment  {
         aggregator.mockSetCurrentPrice(price);
         bytes32[] memory parents;
         nodeId = NodeModule(oracleManager).registerNode(NodeDefinition.NodeType.CHAINLINK, abi.encode(address(aggregator), 0, 18), parents);
+    }
+
+
+    function getTokenNamesArray(uint length) internal returns (bytes32[] memory tokenNames) {
+        bytes32[] memory listOfTokenNames = new bytes32[](50);
+        require(length <= listOfTokenNames.length, "Invalid length for Token names");
+
+        listOfTokenNames[0] = "ETH";
+        listOfTokenNames[1] = "BTC";
+        listOfTokenNames[2] = "LINK";
+        listOfTokenNames[3] = "BNB";
+        listOfTokenNames[4] = "SOL";
+        listOfTokenNames[5] = "ADA";
+        listOfTokenNames[6] = "DOGE";
+        listOfTokenNames[7] = "AAVE";
+        listOfTokenNames[8] = "AVAX";
+        listOfTokenNames[9] = "UNI";
+        listOfTokenNames[10] = "dETH";
+        listOfTokenNames[11] = "dBTC";
+        listOfTokenNames[12] = "dLINK";
+        listOfTokenNames[13] = "dBNB";
+        listOfTokenNames[14] = "dSOL";
+        listOfTokenNames[15] = "dADA";
+        listOfTokenNames[16] = "dDOGE";
+        listOfTokenNames[17] = "dAAVE";
+        listOfTokenNames[18] = "dAVAX";
+        listOfTokenNames[19] = "dUNI";
+        listOfTokenNames[20] = "aETH";
+        listOfTokenNames[21] = "aBTC";
+        listOfTokenNames[22] = "aLINK";
+        listOfTokenNames[23] = "aBNB";
+        listOfTokenNames[24] = "aSOL";
+        listOfTokenNames[25] = "aADA";
+        listOfTokenNames[26] = "aDOGE";
+        listOfTokenNames[27] = "aAAVE";
+        listOfTokenNames[28] = "aAVAX";
+        listOfTokenNames[29] = "aUNI";
+        listOfTokenNames[30] = "bETH";
+        listOfTokenNames[31] = "bBTC";
+        listOfTokenNames[32] = "bLINK";
+        listOfTokenNames[33] = "bBNB";
+        listOfTokenNames[34] = "bSOL";
+        listOfTokenNames[35] = "bADA";
+        listOfTokenNames[36] = "bDOGE";
+        listOfTokenNames[37] = "bAAVE";
+        listOfTokenNames[38] = "bAVAX";
+        listOfTokenNames[39] = "bUNI";
+        listOfTokenNames[40] = "cETH";
+        listOfTokenNames[41] = "cBTC";
+        listOfTokenNames[42] = "cLINK";
+        listOfTokenNames[43] = "cBNB";
+        listOfTokenNames[44] = "cSOL";
+        listOfTokenNames[45] = "cADA";
+        listOfTokenNames[46] = "cDOGE";
+        listOfTokenNames[47] = "cAAVE";
+        listOfTokenNames[48] = "cAVAX";
+        listOfTokenNames[49] = "cUNI";
+
+        bytes32[] memory tokenNames = new bytes32[](length);
+        for(uint i = 0; i < length; i++) {
+            tokenNames[i] = listOfTokenNames[i];
+        }
+        return tokenNames;
+    }
+
+    function getPricesArray(uint length) internal returns (uint[] memory prices) {
+        uint[] memory listOfPrices = new uint[](50);
+        require(length <= listOfPrices.length, "Invalid length for Prices");
+
+        listOfPrices[0] = 1000 ether;
+        listOfPrices[1] = 50_000 ether;
+        listOfPrices[2] = 20 ether;
+        listOfPrices[3] = 500 ether;
+        listOfPrices[4] = 100 ether;
+        listOfPrices[5] = 2 ether;
+        listOfPrices[6] = 0.1 ether;
+        listOfPrices[7] = 200 ether;
+        listOfPrices[8] = 50 ether;
+        listOfPrices[9] = 20 ether;
+        listOfPrices[10] = 1000 ether;
+        listOfPrices[11] = 50_000 ether;
+        listOfPrices[12] = 20 ether;
+        listOfPrices[13] = 500 ether;
+        listOfPrices[14] = 100 ether;
+        listOfPrices[15] = 2 ether;
+        listOfPrices[16] = 0.1 ether;
+        listOfPrices[17] = 200 ether;
+        listOfPrices[18] = 50 ether;
+        listOfPrices[19] = 20 ether;
+        listOfPrices[20] = 1000 ether;
+        listOfPrices[21] = 50_000 ether;
+        listOfPrices[22] = 20 ether;
+        listOfPrices[23] = 500 ether;
+        listOfPrices[24] = 100 ether;
+        listOfPrices[25] = 2 ether;
+        listOfPrices[26] = 0.1 ether;
+        listOfPrices[27] = 200 ether;
+        listOfPrices[28] = 50 ether;
+        listOfPrices[29] = 20 ether;
+        listOfPrices[30] = 1000 ether;
+        listOfPrices[31] = 50_000 ether;
+        listOfPrices[32] = 20 ether;
+        listOfPrices[33] = 500 ether;
+        listOfPrices[34] = 100 ether;
+        listOfPrices[35] = 2 ether;
+        listOfPrices[36] = 0.1 ether;
+        listOfPrices[37] = 200 ether;
+        listOfPrices[38] = 50 ether;
+        listOfPrices[39] = 20 ether;
+        listOfPrices[40] = 1000 ether;
+        listOfPrices[41] = 50_000 ether;
+        listOfPrices[42] = 20 ether;
+        listOfPrices[43] = 500 ether;
+        listOfPrices[44] = 100 ether;
+        listOfPrices[45] = 2 ether;
+        listOfPrices[46] = 0.1 ether;
+        listOfPrices[47] = 200 ether;
+        listOfPrices[48] = 50 ether;
+        listOfPrices[49] = 20 ether;
+
+
+        uint[] memory prices = new uint[](length);
+        for(uint i = 0; i < length; i++) {
+            prices[i] = listOfPrices[i];
+        }
+        return prices;
+    }
+
+    function getPoolIdsArray(uint length) internal returns (uint128[] memory poolIds) {
+        uint128[] memory listOfPoolIds = new uint128[](20);
+        require(length <= listOfPoolIds.length, "Invalid length for pool Ids");
+
+        listOfPoolIds[0] = 1;
+        listOfPoolIds[1] = 2;
+        listOfPoolIds[2] = 3;
+        listOfPoolIds[3] = 4;
+        listOfPoolIds[4] = 5;
+        listOfPoolIds[5] = 6;
+        listOfPoolIds[6] = 7;
+        listOfPoolIds[7] = 8;
+        listOfPoolIds[8] = 9;
+        listOfPoolIds[9] = 10;
+        listOfPoolIds[10] = 11;
+        listOfPoolIds[11] = 12;
+        listOfPoolIds[12] = 13;
+        listOfPoolIds[13] = 14;
+        listOfPoolIds[14] = 15;
+        listOfPoolIds[15] = 16;
+        listOfPoolIds[16] = 17;
+        listOfPoolIds[17] = 18;
+        listOfPoolIds[18] = 19;
+        listOfPoolIds[19] = 20;
+
+        uint128[] memory poolIds = new uint128[](length);
+        for(uint i = 0; i < length; i++) {
+            PoolModule(synthetixV3).createPool(listOfPoolIds[i], address(this));
+            poolIds[i] = listOfPoolIds[i];
+        }
+        return poolIds;
     }
 }
