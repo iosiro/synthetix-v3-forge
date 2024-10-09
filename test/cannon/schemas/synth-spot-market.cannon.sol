@@ -26,52 +26,28 @@ import {SynthRouter} from "src/generated/routers/SynthRouter.g.sol";
 library CannonScript {
 
     function deploy() internal {
-      
-        // [contract.CoreModule]
-        Cannon.register("synthetix-spot-market.CoreModule", address(new CoreModule{salt: 0x00}()));
-
-        // [contract.SpotMarketFactoryModule]
-        Cannon.register("synthetix-spot-market.SpotMarketFactoryModule", address(new SpotMarketFactoryModule{salt: 0x00}()));
-
-        // [contract.AtomicOrderModule]
-        Cannon.register("synthetix-spot-market.AtomicOrderModule", address(new AtomicOrderModule{salt: 0x00}()));
-
-        // [contract.AsyncOrderModule]
-        Cannon.register("synthetix-spot-market.AsyncOrderModule", address(new AsyncOrderModule{salt: 0x00}()));
-
-        // [contract.AsyncOrderSettlementModule]
-        Cannon.register("synthetix-spot-market.AsyncOrderSettlementModule", address(new AsyncOrderSettlementModule{salt: 0x00}()));
-
-        // [contract.AsyncOrderConfigurationModule]
-        Cannon.register("synthetix-spot-market.AsyncOrderConfigurationModule", address(new AsyncOrderConfigurationModule{salt: 0x00}()));
-
-        // [contract.WrapperModule]
-        Cannon.register("synthetix-spot-market.WrapperModule", address(new WrapperModule{salt: 0x00}()));
-
-        // [contract.MarketConfigurationModule]
-        Cannon.register("synthetix-spot-market.MarketConfigurationModule", address(new MarketConfigurationModule{salt: 0x00}()));
-
-        // [contract.FeatureFlagModule]
-        Cannon.register("synthetix-spot-market.FeatureFlagModule", address(new FeatureFlagModule{salt: 0x00}()));
-
-        // [contract.SynthTokenModule]
-        Cannon.register("synthetix-spot-market.SynthTokenModule", address(new SynthTokenModule{salt: 0x00}()));
-
         // [router.SpotMarketRouter]
-        Cannon.register("synthetix-spot-market.SpotMarketRouter", address(new SpotMarketRouter{salt: 0x00}()));
+        Cannon.register("synthetix-spot-market.SpotMarketRouter", address(new SpotMarketRouter(SpotMarketRouter.Modules({
+            featureFlagModule: address(new FeatureFlagModule()),
+            asyncOrderSettlementModule: address(new AsyncOrderSettlementModule()),
+            wrapperModule: address(new WrapperModule()),
+            spotMarketFactoryModule: address(new SpotMarketFactoryModule()),
+            atomicOrderModule: address(new AtomicOrderModule()),
+            asyncOrderModule: address(new AsyncOrderModule()),
+            coreModule: address(new CoreModule()),
+            asyncOrderConfigurationModule: address(new AsyncOrderConfigurationModule()),
+            marketConfigurationModule: address(new MarketConfigurationModule())
+        }))));
 
         // [contract.InitialSpotMarketProxy]
         // [invoke.upgrade_spot_market_proxy]
-        Cannon.register("synthetix-spot-market.SpotMarketProxy", address(new Proxy{salt: 0x00}(Cannon.resolve("synthetix-spot-market.SpotMarketRouter"), address(this))));
+        Cannon.register("synthetix-spot-market.SpotMarketProxy", address(new Proxy(Cannon.resolve("synthetix-spot-market.SpotMarketRouter"), address(this))));
         
         // [router.SynthRouter]
-        Cannon.register("synthetix-spot-market.SynthRouter", address(new SynthRouter{salt: 0x00}()));
-
-        // Sanity check
-        ISpotMarketRouter spotMarketProxy = ISpotMarketRouter(Cannon.resolve("synthetix-spot-market.SpotMarketProxy"));
-
-        // [invoke.set_synthetix_system]
-        spotMarketProxy.setSynthImplementation(Cannon.resolve("synthetix-spot-market.SynthTokenModule"));
+        Cannon.register("synthetix-spot-market.SynthRouter", address(new SynthRouter(SynthRouter.Modules({
+            coreModule: address(new CoreModule()),
+            synthTokenModule: address(new SynthTokenModule())
+        }))));
 
         // [invoke.addSpotMarketToFeatureFlag]
         FeatureFlagModule(Cannon.resolve("synthetix.CoreProxy")).addToFeatureFlagAllowlist("registerMarket", Cannon.resolve("synthetix-spot-market.SpotMarketProxy"));

@@ -251,7 +251,7 @@ contract CollateralModuleTest is SynthetixLegacyTestBase {
     }
 
     event CollateralLockExpired(
-        uint128 indexed accountId, address indexed collateralType, uint256 tokenAmount, uint64 expireTimestamp
+        uint256 tokenAmount, uint64 expireTimestamp
     );
 
     function test_expiringLocks() internal {
@@ -271,9 +271,9 @@ contract CollateralModuleTest is SynthetixLegacyTestBase {
 
         // invoke on the whole thing
         vm.expectEmit();
-        emit CollateralLockExpired(1, address(collateral), depositAmountD18 / 10, uint64(timestamp + 200));
-        emit CollateralLockExpired(1, address(collateral), depositAmountD18 / 10, uint64(timestamp + 100));
-        emit CollateralLockExpired(1, address(collateral), depositAmountD18 / 10, uint64(timestamp + 300));
+        emit CollateralLockExpired(depositAmountD18 / 10, uint64(timestamp + 200));
+        emit CollateralLockExpired(depositAmountD18 / 10, uint64(timestamp + 100));
+        emit CollateralLockExpired(depositAmountD18 / 10, uint64(timestamp + 300));
         synthetix.cleanExpiredLocks(1, address(collateral), 0, 0);
 
         // only has the one unexpired lock remaining

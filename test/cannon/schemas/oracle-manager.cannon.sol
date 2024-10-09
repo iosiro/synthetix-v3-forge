@@ -10,15 +10,13 @@ import {CoreModule} from "@synthetixio/oracle-manager/contracts/modules/CoreModu
 import {Proxy} from "@synthetixio/oracle-manager/contracts/Proxy.sol";
 import {NodeModule} from "@synthetixio/oracle-manager/contracts/modules/NodeModule.sol";
 
-import "lib/synthetix-v3/protocol/synthetix/contracts/modules/account/AccountTokenModule.sol";
-
 library CannonScript {
 
     function deploy() internal {
-        new AccountTokenModule();
-        new NodeModule{salt: 0x00}();
-        new CoreModule{salt: 0x00}();
-        Proxy proxy = new Proxy{salt: 0x00}(address(new OracleManagerRouter()), address(this));
+        Proxy proxy = new Proxy(address(new OracleManagerRouter(OracleManagerRouter.Modules({
+            nodeModule: address(new NodeModule()),
+            coreModule: address(new CoreModule())
+        }))), address(this));
         Cannon.register("oracle-manager.Proxy", address(proxy));
     }
 }

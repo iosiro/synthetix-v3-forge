@@ -19,7 +19,7 @@ contract SynthetixIntegrationTestBase is Test {
     IUSDRouter usd;
 
     
-    function setUp() public {
+    function setUp() virtual public {
         OracleManager.deploy();
         Synthetix.deploy();
         

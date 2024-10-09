@@ -34,45 +34,51 @@ import {AccountTokenModule} from "@synthetixio/main/contracts/modules/account/Ac
 import {USDTokenModule} from "@synthetixio/main/contracts/modules/usd/USDTokenModule.sol";
 
 
-import {CoreRouter, ICoreRouter} from "src/generated/routers/CoreRouter.g.sol";
+import {CoreRouter, ICoreRouter, CollateralConfiguration} from "src/generated/routers/CoreRouter.g.sol";
 import {AccountRouter, IAccountRouter} from "src/generated/routers/AccountRouter.g.sol";
 import {USDRouter} from "src/generated/routers/USDRouter.g.sol";
 
-import {IOracleManagerRouter} from "src/generated/routers/OracleManagerRouter.g.sol";
+import {IOracleManagerRouter, NodeDefinition} from "src/generated/routers/OracleManagerRouter.g.sol";
 
-
+import "forge-std/console.sol";
 library CannonScript {
     function deploy() internal {
-        // [router.CoreRouter]
-        new InitialModuleBundle{salt: 0x00}();
-        new FeatureFlagModule{salt: 0x00}();
-        new AccountModule{salt: 0x00}();
-        new AssociateDebtModule{salt: 0x00}();
-        new CcipReceiverModule{salt: 0x00}();
-        new CollateralModule{salt: 0x00}();
-        new CollateralConfigurationModule{salt: 0x00}();
-        new CrossChainUSDModule{salt: 0x00}();
-        new IssueUSDModule{salt: 0x00}();
-        new LiquidationModule{salt: 0x00}();
-        new MarketCollateralModule{salt: 0x00}();
-        new MarketManagerModule{salt: 0x00}();
-        new PoolConfigurationModule{salt: 0x00}();
-        new PoolModule{salt: 0x00}();
-        new RewardsManagerModule{salt: 0x00}();
-        new UtilsModule{salt: 0x00}();
-        new VaultModule{salt: 0x00}();
-        new AssociatedSystemsModule{salt: 0x00}();
 
+        // [router.CoreRouter]
         // [invoke.upgrade_core_proxy]
-        Cannon.register("synthetix.CoreProxy", address(new Proxy{salt: 0x00}(address(new CoreRouter()), address(this))));
+        Cannon.register("synthetix.CoreProxy", address(new Proxy(address(new CoreRouter(CoreRouter.Modules({
+            associatedSystemsModule: address(new AssociatedSystemsModule()),
+            marketCollateralModule: address(new MarketCollateralModule()),
+            rewardsManagerModule: address(new RewardsManagerModule()),
+            collateralModule: address(new CollateralModule()),
+            issueUSDModule: address(new IssueUSDModule()),
+            associateDebtModule: address(new AssociateDebtModule()),
+            marketManagerModule: address(new MarketManagerModule()),
+            initialModuleBundle: address(new InitialModuleBundle()),
+            featureFlagModule: address(new FeatureFlagModule()),
+            accountModule: address(new AccountModule()),
+            vaultModule: address(new VaultModule()),
+            liquidationModule: address(new LiquidationModule()),
+            poolModule: address(new PoolModule()),
+            utilsModule: address(new UtilsModule()),
+            collateralConfigurationModule: address(new CollateralConfigurationModule()),
+            ccipReceiverModule: address(new CcipReceiverModule()),
+            crossChainUSDModule: address(new CrossChainUSDModule()),
+            poolConfigurationModule: address(new PoolConfigurationModule())
+        }))), address(this))));
 
         // [router.AccountRouter]
-        new AccountTokenModule{salt: 0x00}();
-        AccountRouter accountRouter = new AccountRouter{salt: 0x00}();
+        AccountRouter accountRouter = new AccountRouter(AccountRouter.Modules({
+            accountTokenModule: address(new AccountTokenModule()),
+            initialModuleBundle: address(new InitialModuleBundle())
+        }));
       
         // [router.USDRouter]
-        new USDTokenModule{salt: 0x00}();
-        USDRouter usdRouter = new USDRouter{salt: 0x00}();
+        USDRouter usdRouter = new USDRouter(USDRouter.Modules({
+            associatedSystemsModule: address(new AssociatedSystemsModule()),
+            uSDTokenModule: address(new USDTokenModule()),
+            initialModuleBundle: address(new InitialModuleBundle())
+        }));
 
         ICoreRouter coreProxy = ICoreRouter(Cannon.resolve("synthetix.CoreProxy"));
         IOracleManagerRouter oracleManager = IOracleManagerRouter(Cannon.resolve("oracle-manager.Proxy"));
@@ -134,12 +140,12 @@ library CannonScript {
         bytes32 const_one_oracle_id;
         {
             bytes32[] memory args;
-            const_one_oracle_id = oracleManager.registerNode(IOracleManagerRouter.NodeType.wrap(8), abi.encode([uint256(1 ether)]), args);
+            const_one_oracle_id = oracleManager.registerNode(NodeDefinition.NodeType.wrap(8), abi.encode([uint256(1 ether)]), args);
         }
 
         // [invoke.configure_usd_collateral]
         {
-            coreProxy.configureCollateral(ICoreRouter.Data({
+            coreProxy.configureCollateral(CollateralConfiguration.Data({
                 tokenAddress: Cannon.resolve("synthetix.USDProxy"), 
                 oracleNodeId: const_one_oracle_id,
                 issuanceRatioD18: 10 ether,

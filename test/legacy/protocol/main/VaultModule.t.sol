@@ -21,17 +21,14 @@ contract VaultModuleTest is SynthetixLegacyBootstrapWithStakedPool {
         super.setUp();
     }
 
-    function test_vault_withdraw() public {
+    function test_vault_withdraw() as_user(user1) public {
         // deposit collateral
-        synthetix.delegateCollateral(accountId, poolId, address(collateral), 1000 ether, 1 ether);
-
-
         synthetix.delegateCollateral(accountId, poolId, address(collateral), 0 ether, 1 ether);
 
-        synthetix.withdraw(accountId, address(collateral), 500 ether);
+        synthetix.withdraw(accountId, address(collateral), 1000 ether);
 
         // verify account state
-        verifyAccountState(accountId, poolId, 500 ether, 0);
+        verifyAccountState(accountId, poolId, 0 ether, 0);
     }
 
     function test_freshVault() public {
