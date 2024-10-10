@@ -5,6 +5,8 @@ import {ArbitrumMainnetPerpMarketForkTest} from "./ArbitrumMainnetPerpMarketFork
 import {ArbitrumMainnetSynthetixForkTest} from "./ArbitrumMainnetSynthetixForkTest.t.sol";
 import {ArbitrumMainnetOracleManagerForkTest} from "./ArbitrumMainnetOracleManagerForkTest.t.sol";
 
+import {IPerpMarketRouter} from "src/generated/routers/PerpMarketRouter.g.sol";
+
 contract BaseMainnetForkTest is ArbitrumMainnetPerpMarketForkTest, ArbitrumMainnetSynthetixForkTest, ArbitrumMainnetOracleManagerForkTest {
 
     function upgrade() override(ArbitrumMainnetPerpMarketForkTest, ArbitrumMainnetSynthetixForkTest, ArbitrumMainnetOracleManagerForkTest) public  {
@@ -17,7 +19,8 @@ contract BaseMainnetForkTest is ArbitrumMainnetPerpMarketForkTest, ArbitrumMainn
     }
 
     function test_simple() public {
-
+        //vm.warp(block.timestamp + 365 days);
+        //IPerpMarketRouter(PERP_MARKET_PROXY).getAvailableMargin(2);
     }
 
 }

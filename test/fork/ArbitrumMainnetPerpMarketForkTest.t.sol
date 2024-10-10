@@ -29,7 +29,7 @@ import {Test} from "forge-std/Test.sol";
 
 contract ArbitrumMainnetPerpMarketForkTest is Test {
     //address constant private SPOT_MARKET_PROXY = 0xa65538A6B9A8442854dEcB6E3F85782C60757D60;
-    address payable constant private PERP_MARKET_PROXY = payable(0xd762960c31210Cf1bDf75b06A5192d395EEDC659);
+    address payable constant internal PERP_MARKET_PROXY = payable(0xd762960c31210Cf1bDf75b06A5192d395EEDC659);
 
     function upgrade() virtual public {
         
