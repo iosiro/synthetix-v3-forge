@@ -134,52 +134,52 @@ interface ISpotMarketRouter {
 }
 
 contract SpotMarketRouter {
-    address immutable internal _ATOMIC_ORDER_MODULE;
-    address immutable internal _CORE_MODULE;
-    address immutable internal _FEATURE_FLAG_MODULE;
-    address immutable internal _ASYNC_ORDER_MODULE;
-    address immutable internal _SPOT_MARKET_FACTORY_MODULE;
-    address immutable internal _ASYNC_ORDER_CONFIGURATION_MODULE;
     address immutable internal _MARKET_CONFIGURATION_MODULE;
-    address immutable internal _ASYNC_ORDER_SETTLEMENT_MODULE;
+    address immutable internal _FEATURE_FLAG_MODULE;
     address immutable internal _WRAPPER_MODULE;
+    address immutable internal _CORE_MODULE;
+    address immutable internal _SPOT_MARKET_FACTORY_MODULE;
+    address immutable internal _ASYNC_ORDER_SETTLEMENT_MODULE;
+    address immutable internal _ASYNC_ORDER_MODULE;
+    address immutable internal _ATOMIC_ORDER_MODULE;
+    address immutable internal _ASYNC_ORDER_CONFIGURATION_MODULE;
 
     struct Modules {
-        address atomicOrderModule;
-        address coreModule;
-        address featureFlagModule;
-        address asyncOrderModule;
-        address spotMarketFactoryModule;
-        address asyncOrderConfigurationModule;
         address marketConfigurationModule;
-        address asyncOrderSettlementModule;
+        address featureFlagModule;
         address wrapperModule;
+        address coreModule;
+        address spotMarketFactoryModule;
+        address asyncOrderSettlementModule;
+        address asyncOrderModule;
+        address atomicOrderModule;
+        address asyncOrderConfigurationModule;
     }
 
     constructor(Modules memory $) {
-        _ATOMIC_ORDER_MODULE = $.atomicOrderModule;
-        _CORE_MODULE = $.coreModule;
-        _FEATURE_FLAG_MODULE = $.featureFlagModule;
-        _ASYNC_ORDER_MODULE = $.asyncOrderModule;
-        _SPOT_MARKET_FACTORY_MODULE = $.spotMarketFactoryModule;
-        _ASYNC_ORDER_CONFIGURATION_MODULE = $.asyncOrderConfigurationModule;
         _MARKET_CONFIGURATION_MODULE = $.marketConfigurationModule;
-        _ASYNC_ORDER_SETTLEMENT_MODULE = $.asyncOrderSettlementModule;
+        _FEATURE_FLAG_MODULE = $.featureFlagModule;
         _WRAPPER_MODULE = $.wrapperModule;
+        _CORE_MODULE = $.coreModule;
+        _SPOT_MARKET_FACTORY_MODULE = $.spotMarketFactoryModule;
+        _ASYNC_ORDER_SETTLEMENT_MODULE = $.asyncOrderSettlementModule;
+        _ASYNC_ORDER_MODULE = $.asyncOrderModule;
+        _ATOMIC_ORDER_MODULE = $.atomicOrderModule;
+        _ASYNC_ORDER_CONFIGURATION_MODULE = $.asyncOrderConfigurationModule;
     }
 
     error UnknownSelector(bytes4 sel);
 
     function findImplementationAddress(bytes32 implementation) internal view returns (address result) {
-        if (implementation == 0xde7d1ad505493870cc86eeab9b0b11ca0eb5dcd69617b8e0431678b80c0b6933) return _ATOMIC_ORDER_MODULE;
-        if (implementation == 0x4244fcb9e04b991a1f0644ba7d86c296f089ca67c187f14cda4939cff7f6d936) return _CORE_MODULE;
-        if (implementation == 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea) return _FEATURE_FLAG_MODULE;
-        if (implementation == 0x8f148827f540e87584ef6bd7c48c363b0b2c36d4f0bf423491684ab341a105db) return _ASYNC_ORDER_MODULE;
-        if (implementation == 0xe93ec5e8c0e0174f239b7136e06936120a6b4e2c568c55b0c9167177af9f4542) return _SPOT_MARKET_FACTORY_MODULE;
-        if (implementation == 0x0db28d5b05a22ab2c1e910f8739121781d3917f8e0a197158108af1a2933a9a5) return _ASYNC_ORDER_CONFIGURATION_MODULE;
         if (implementation == 0xc3ab802765cbabcb67fead9f797aca74ccc7c83a658bfa9ead661bd3d896cbd6) return _MARKET_CONFIGURATION_MODULE;
-        if (implementation == 0xa3a7966d1c4efdb6956fe90c1394d0003853cfbfaec26f965e0f01691d56589d) return _ASYNC_ORDER_SETTLEMENT_MODULE;
+        if (implementation == 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea) return _FEATURE_FLAG_MODULE;
         if (implementation == 0x393e993f00835277fdea9710cd0e6170a7897e06036c685b3d416125bfaf402a) return _WRAPPER_MODULE;
+        if (implementation == 0x4244fcb9e04b991a1f0644ba7d86c296f089ca67c187f14cda4939cff7f6d936) return _CORE_MODULE;
+        if (implementation == 0xe93ec5e8c0e0174f239b7136e06936120a6b4e2c568c55b0c9167177af9f4542) return _SPOT_MARKET_FACTORY_MODULE;
+        if (implementation == 0xa3a7966d1c4efdb6956fe90c1394d0003853cfbfaec26f965e0f01691d56589d) return _ASYNC_ORDER_SETTLEMENT_MODULE;
+        if (implementation == 0x8f148827f540e87584ef6bd7c48c363b0b2c36d4f0bf423491684ab341a105db) return _ASYNC_ORDER_MODULE;
+        if (implementation == 0xde7d1ad505493870cc86eeab9b0b11ca0eb5dcd69617b8e0431678b80c0b6933) return _ATOMIC_ORDER_MODULE;
+        if (implementation == 0x0db28d5b05a22ab2c1e910f8739121781d3917f8e0a197158108af1a2933a9a5) return _ASYNC_ORDER_CONFIGURATION_MODULE;
     }
 
     fallback() external payable {

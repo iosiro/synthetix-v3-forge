@@ -35,27 +35,27 @@ interface IUSDRouter {
 }
 
 contract USDRouter {
-    address immutable internal _INITIAL_MODULE_BUNDLE;
     address immutable internal _ASSOCIATED_SYSTEMS_MODULE;
+    address immutable internal _INITIAL_MODULE_BUNDLE;
     address immutable internal _USDTOKEN_MODULE;
 
     struct Modules {
-        address initialModuleBundle;
         address associatedSystemsModule;
+        address initialModuleBundle;
         address uSDTokenModule;
     }
 
     constructor(Modules memory $) {
-        _INITIAL_MODULE_BUNDLE = $.initialModuleBundle;
         _ASSOCIATED_SYSTEMS_MODULE = $.associatedSystemsModule;
+        _INITIAL_MODULE_BUNDLE = $.initialModuleBundle;
         _USDTOKEN_MODULE = $.uSDTokenModule;
     }
 
     error UnknownSelector(bytes4 sel);
 
     function findImplementationAddress(bytes32 implementation) internal view returns (address result) {
-        if (implementation == 0x65ed98bc6e8636d3e31c70259bddf83fd475024400983114ea42279adf1fd151) return _INITIAL_MODULE_BUNDLE;
         if (implementation == 0x50df6d567ac8fa7c6e470909cc5f9ff73ab1ae21a4df8de212e92de61d533252) return _ASSOCIATED_SYSTEMS_MODULE;
+        if (implementation == 0x65ed98bc6e8636d3e31c70259bddf83fd475024400983114ea42279adf1fd151) return _INITIAL_MODULE_BUNDLE;
         if (implementation == 0x3bdfbf77e8b823a700315dec9df53561a103263784a9f9232591409213e5cd03) return _USDTOKEN_MODULE;
     }
 

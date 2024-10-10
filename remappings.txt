@@ -6,3 +6,4 @@
 @synthetixio/legacy-market/contracts/=lib/synthetix-v3/markets/legacy-market/contracts/
 @synthetixio/perps-market/contracts/=lib/synthetix-v3/markets/perps-market/contracts/
 @synthetixio/rewards-distributor/=lib/synthetix-v3/auxiliary/RewardsDistributor/
+@synthetixio/core-contracts/contracts/=lib/synthetix-v3/utils/core-contracts/contracts/

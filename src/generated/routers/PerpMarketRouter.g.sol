@@ -180,72 +180,72 @@ interface IPerpMarketRouter {
 }
 
 contract PerpMarketRouter {
-    address immutable internal _GLOBAL_PERPS_MARKET_MODULE;
-    address immutable internal _PERPS_MARKET_FACTORY_MODULE;
-    address immutable internal _ASYNC_ORDER_SETTLEMENT_PYTH_MODULE;
-    address immutable internal _LIQUIDATION_MODULE;
-    address immutable internal _PERPS_MARKET_MODULE;
-    address immutable internal _MARKET_CONFIGURATION_MODULE;
-    address immutable internal _FEATURE_FLAG_MODULE;
-    address immutable internal _ASSOCIATED_SYSTEMS_MODULE;
     address immutable internal _ASYNC_ORDER_MODULE;
+    address immutable internal _COLLATERAL_CONFIGURATION_MODULE;
+    address immutable internal _ASSOCIATED_SYSTEMS_MODULE;
     address immutable internal _ASYNC_ORDER_CANCEL_MODULE;
+    address immutable internal _PERPS_MARKET_FACTORY_MODULE;
     address immutable internal _CORE_MODULE;
     address immutable internal _PERPS_ACCOUNT_MODULE;
-    address immutable internal _COLLATERAL_CONFIGURATION_MODULE;
+    address immutable internal _ASYNC_ORDER_SETTLEMENT_PYTH_MODULE;
     address immutable internal _ACCOUNT_MODULE;
+    address immutable internal _PERPS_MARKET_MODULE;
+    address immutable internal _FEATURE_FLAG_MODULE;
+    address immutable internal _LIQUIDATION_MODULE;
+    address immutable internal _MARKET_CONFIGURATION_MODULE;
+    address immutable internal _GLOBAL_PERPS_MARKET_MODULE;
 
     struct Modules {
-        address globalPerpsMarketModule;
-        address perpsMarketFactoryModule;
-        address asyncOrderSettlementPythModule;
-        address liquidationModule;
-        address perpsMarketModule;
-        address marketConfigurationModule;
-        address featureFlagModule;
-        address associatedSystemsModule;
         address asyncOrderModule;
+        address collateralConfigurationModule;
+        address associatedSystemsModule;
         address asyncOrderCancelModule;
+        address perpsMarketFactoryModule;
         address coreModule;
         address perpsAccountModule;
-        address collateralConfigurationModule;
+        address asyncOrderSettlementPythModule;
         address accountModule;
+        address perpsMarketModule;
+        address featureFlagModule;
+        address liquidationModule;
+        address marketConfigurationModule;
+        address globalPerpsMarketModule;
     }
 
     constructor(Modules memory $) {
-        _GLOBAL_PERPS_MARKET_MODULE = $.globalPerpsMarketModule;
-        _PERPS_MARKET_FACTORY_MODULE = $.perpsMarketFactoryModule;
-        _ASYNC_ORDER_SETTLEMENT_PYTH_MODULE = $.asyncOrderSettlementPythModule;
-        _LIQUIDATION_MODULE = $.liquidationModule;
-        _PERPS_MARKET_MODULE = $.perpsMarketModule;
-        _MARKET_CONFIGURATION_MODULE = $.marketConfigurationModule;
-        _FEATURE_FLAG_MODULE = $.featureFlagModule;
-        _ASSOCIATED_SYSTEMS_MODULE = $.associatedSystemsModule;
         _ASYNC_ORDER_MODULE = $.asyncOrderModule;
+        _COLLATERAL_CONFIGURATION_MODULE = $.collateralConfigurationModule;
+        _ASSOCIATED_SYSTEMS_MODULE = $.associatedSystemsModule;
         _ASYNC_ORDER_CANCEL_MODULE = $.asyncOrderCancelModule;
+        _PERPS_MARKET_FACTORY_MODULE = $.perpsMarketFactoryModule;
         _CORE_MODULE = $.coreModule;
         _PERPS_ACCOUNT_MODULE = $.perpsAccountModule;
-        _COLLATERAL_CONFIGURATION_MODULE = $.collateralConfigurationModule;
+        _ASYNC_ORDER_SETTLEMENT_PYTH_MODULE = $.asyncOrderSettlementPythModule;
         _ACCOUNT_MODULE = $.accountModule;
+        _PERPS_MARKET_MODULE = $.perpsMarketModule;
+        _FEATURE_FLAG_MODULE = $.featureFlagModule;
+        _LIQUIDATION_MODULE = $.liquidationModule;
+        _MARKET_CONFIGURATION_MODULE = $.marketConfigurationModule;
+        _GLOBAL_PERPS_MARKET_MODULE = $.globalPerpsMarketModule;
     }
 
     error UnknownSelector(bytes4 sel);
 
     function findImplementationAddress(bytes32 implementation) internal view returns (address result) {
-        if (implementation == 0x50160bf7a047817ef95e7328bccff7a81006266ee5be06323768fa64266e8156) return _GLOBAL_PERPS_MARKET_MODULE;
-        if (implementation == 0x1b204be02d43f4ba05c3744fe2894f5653a6e6c323bda300cd978d8a0d8ea1a7) return _PERPS_MARKET_FACTORY_MODULE;
-        if (implementation == 0xffa2091df3a834ca57985e8013cfdfa5512cf4b3b09a9b8626b2d51d7e25367f) return _ASYNC_ORDER_SETTLEMENT_PYTH_MODULE;
-        if (implementation == 0xfb75d6efbdb0632a474557551464395e52426684b8c8c47d571c945a5808c208) return _LIQUIDATION_MODULE;
-        if (implementation == 0x9f77233679168ade073a42beccd9047f69d846035f7eecf87d12840952d05f80) return _PERPS_MARKET_MODULE;
-        if (implementation == 0xc3ab802765cbabcb67fead9f797aca74ccc7c83a658bfa9ead661bd3d896cbd6) return _MARKET_CONFIGURATION_MODULE;
-        if (implementation == 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea) return _FEATURE_FLAG_MODULE;
-        if (implementation == 0x50df6d567ac8fa7c6e470909cc5f9ff73ab1ae21a4df8de212e92de61d533252) return _ASSOCIATED_SYSTEMS_MODULE;
         if (implementation == 0x8f148827f540e87584ef6bd7c48c363b0b2c36d4f0bf423491684ab341a105db) return _ASYNC_ORDER_MODULE;
+        if (implementation == 0x0068474172de40722e6eab88b0e5c1cc53b5c16809593806d615e599ea81b581) return _COLLATERAL_CONFIGURATION_MODULE;
+        if (implementation == 0x50df6d567ac8fa7c6e470909cc5f9ff73ab1ae21a4df8de212e92de61d533252) return _ASSOCIATED_SYSTEMS_MODULE;
         if (implementation == 0xee901a7913a90f50615960470da1eb4899327234923a1ab4dc67bcf4cde05b72) return _ASYNC_ORDER_CANCEL_MODULE;
+        if (implementation == 0x1b204be02d43f4ba05c3744fe2894f5653a6e6c323bda300cd978d8a0d8ea1a7) return _PERPS_MARKET_FACTORY_MODULE;
         if (implementation == 0x4244fcb9e04b991a1f0644ba7d86c296f089ca67c187f14cda4939cff7f6d936) return _CORE_MODULE;
         if (implementation == 0x17d02a4c5868feaaf7887ea108c34c940940ed03eb0ee738524532f957ed3972) return _PERPS_ACCOUNT_MODULE;
-        if (implementation == 0x0068474172de40722e6eab88b0e5c1cc53b5c16809593806d615e599ea81b581) return _COLLATERAL_CONFIGURATION_MODULE;
+        if (implementation == 0xffa2091df3a834ca57985e8013cfdfa5512cf4b3b09a9b8626b2d51d7e25367f) return _ASYNC_ORDER_SETTLEMENT_PYTH_MODULE;
         if (implementation == 0xfa6e4f9d0b597c15a039f6895e4aff81103501d0f8dfee25e41810095a2c8a97) return _ACCOUNT_MODULE;
+        if (implementation == 0x9f77233679168ade073a42beccd9047f69d846035f7eecf87d12840952d05f80) return _PERPS_MARKET_MODULE;
+        if (implementation == 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea) return _FEATURE_FLAG_MODULE;
+        if (implementation == 0xfb75d6efbdb0632a474557551464395e52426684b8c8c47d571c945a5808c208) return _LIQUIDATION_MODULE;
+        if (implementation == 0xc3ab802765cbabcb67fead9f797aca74ccc7c83a658bfa9ead661bd3d896cbd6) return _MARKET_CONFIGURATION_MODULE;
+        if (implementation == 0x50160bf7a047817ef95e7328bccff7a81006266ee5be06323768fa64266e8156) return _GLOBAL_PERPS_MARKET_MODULE;
     }
 
     fallback() external payable {

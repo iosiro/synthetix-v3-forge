@@ -201,88 +201,88 @@ interface ICoreRouter {
 }
 
 contract CoreRouter {
-    address immutable internal _COLLATERAL_MODULE;
-    address immutable internal _CCIP_RECEIVER_MODULE;
-    address immutable internal _INITIAL_MODULE_BUNDLE;
-    address immutable internal _POOL_MODULE;
-    address immutable internal _POOL_CONFIGURATION_MODULE;
-    address immutable internal _LIQUIDATION_MODULE;
+    address immutable internal _ASSOCIATED_SYSTEMS_MODULE;
     address immutable internal _ISSUE_USDMODULE;
-    address immutable internal _MARKET_COLLATERAL_MODULE;
-    address immutable internal _FEATURE_FLAG_MODULE;
-    address immutable internal _COLLATERAL_CONFIGURATION_MODULE;
-    address immutable internal _ASSOCIATE_DEBT_MODULE;
-    address immutable internal _MARKET_MANAGER_MODULE;
+    address immutable internal _COLLATERAL_MODULE;
+    address immutable internal _POOL_MODULE;
+    address immutable internal _ACCOUNT_MODULE;
     address immutable internal _REWARDS_MANAGER_MODULE;
     address immutable internal _VAULT_MODULE;
-    address immutable internal _ACCOUNT_MODULE;
+    address immutable internal _ASSOCIATE_DEBT_MODULE;
     address immutable internal _CROSS_CHAIN_USDMODULE;
+    address immutable internal _MARKET_COLLATERAL_MODULE;
+    address immutable internal _CCIP_RECEIVER_MODULE;
+    address immutable internal _COLLATERAL_CONFIGURATION_MODULE;
     address immutable internal _UTILS_MODULE;
-    address immutable internal _ASSOCIATED_SYSTEMS_MODULE;
+    address immutable internal _POOL_CONFIGURATION_MODULE;
+    address immutable internal _MARKET_MANAGER_MODULE;
+    address immutable internal _LIQUIDATION_MODULE;
+    address immutable internal _FEATURE_FLAG_MODULE;
+    address immutable internal _INITIAL_MODULE_BUNDLE;
 
     struct Modules {
-        address collateralModule;
-        address ccipReceiverModule;
-        address initialModuleBundle;
-        address poolModule;
-        address poolConfigurationModule;
-        address liquidationModule;
+        address associatedSystemsModule;
         address issueUSDModule;
-        address marketCollateralModule;
-        address featureFlagModule;
-        address collateralConfigurationModule;
-        address associateDebtModule;
-        address marketManagerModule;
+        address collateralModule;
+        address poolModule;
+        address accountModule;
         address rewardsManagerModule;
         address vaultModule;
-        address accountModule;
+        address associateDebtModule;
         address crossChainUSDModule;
+        address marketCollateralModule;
+        address ccipReceiverModule;
+        address collateralConfigurationModule;
         address utilsModule;
-        address associatedSystemsModule;
+        address poolConfigurationModule;
+        address marketManagerModule;
+        address liquidationModule;
+        address featureFlagModule;
+        address initialModuleBundle;
     }
 
     constructor(Modules memory $) {
-        _COLLATERAL_MODULE = $.collateralModule;
-        _CCIP_RECEIVER_MODULE = $.ccipReceiverModule;
-        _INITIAL_MODULE_BUNDLE = $.initialModuleBundle;
-        _POOL_MODULE = $.poolModule;
-        _POOL_CONFIGURATION_MODULE = $.poolConfigurationModule;
-        _LIQUIDATION_MODULE = $.liquidationModule;
+        _ASSOCIATED_SYSTEMS_MODULE = $.associatedSystemsModule;
         _ISSUE_USDMODULE = $.issueUSDModule;
-        _MARKET_COLLATERAL_MODULE = $.marketCollateralModule;
-        _FEATURE_FLAG_MODULE = $.featureFlagModule;
-        _COLLATERAL_CONFIGURATION_MODULE = $.collateralConfigurationModule;
-        _ASSOCIATE_DEBT_MODULE = $.associateDebtModule;
-        _MARKET_MANAGER_MODULE = $.marketManagerModule;
+        _COLLATERAL_MODULE = $.collateralModule;
+        _POOL_MODULE = $.poolModule;
+        _ACCOUNT_MODULE = $.accountModule;
         _REWARDS_MANAGER_MODULE = $.rewardsManagerModule;
         _VAULT_MODULE = $.vaultModule;
-        _ACCOUNT_MODULE = $.accountModule;
+        _ASSOCIATE_DEBT_MODULE = $.associateDebtModule;
         _CROSS_CHAIN_USDMODULE = $.crossChainUSDModule;
+        _MARKET_COLLATERAL_MODULE = $.marketCollateralModule;
+        _CCIP_RECEIVER_MODULE = $.ccipReceiverModule;
+        _COLLATERAL_CONFIGURATION_MODULE = $.collateralConfigurationModule;
         _UTILS_MODULE = $.utilsModule;
-        _ASSOCIATED_SYSTEMS_MODULE = $.associatedSystemsModule;
+        _POOL_CONFIGURATION_MODULE = $.poolConfigurationModule;
+        _MARKET_MANAGER_MODULE = $.marketManagerModule;
+        _LIQUIDATION_MODULE = $.liquidationModule;
+        _FEATURE_FLAG_MODULE = $.featureFlagModule;
+        _INITIAL_MODULE_BUNDLE = $.initialModuleBundle;
     }
 
     error UnknownSelector(bytes4 sel);
 
     function findImplementationAddress(bytes32 implementation) internal view returns (address result) {
-        if (implementation == 0xfb55317b42ff15c708ded3036fa17e13455835d28f48eb4a1161f7eb36131b84) return _COLLATERAL_MODULE;
-        if (implementation == 0xdb733e1ba5df49132a98655d23d9aa259bb7f8a0d6ba84b3d3bef5cd58ce8fb7) return _CCIP_RECEIVER_MODULE;
-        if (implementation == 0x65ed98bc6e8636d3e31c70259bddf83fd475024400983114ea42279adf1fd151) return _INITIAL_MODULE_BUNDLE;
-        if (implementation == 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63) return _POOL_MODULE;
-        if (implementation == 0xebe07368dc01fbafdae6a99063c723758ec63a852be08716fb7da3afce8c0c3a) return _POOL_CONFIGURATION_MODULE;
-        if (implementation == 0xfb75d6efbdb0632a474557551464395e52426684b8c8c47d571c945a5808c208) return _LIQUIDATION_MODULE;
+        if (implementation == 0x50df6d567ac8fa7c6e470909cc5f9ff73ab1ae21a4df8de212e92de61d533252) return _ASSOCIATED_SYSTEMS_MODULE;
         if (implementation == 0x0ee17508f70ff04d1df967429cf3e48a25c3393fb8280f0eb687a47267432a10) return _ISSUE_USDMODULE;
-        if (implementation == 0xbf5819b9d5009a6da1beb7169eb0038218c2af0c6b8adc43a1caabdd075d53b7) return _MARKET_COLLATERAL_MODULE;
-        if (implementation == 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea) return _FEATURE_FLAG_MODULE;
-        if (implementation == 0x0068474172de40722e6eab88b0e5c1cc53b5c16809593806d615e599ea81b581) return _COLLATERAL_CONFIGURATION_MODULE;
-        if (implementation == 0xa63e12e8bb6e563af7bc495445354be8a5238a8023aa4fbaa9556445fa4175ce) return _ASSOCIATE_DEBT_MODULE;
-        if (implementation == 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42) return _MARKET_MANAGER_MODULE;
+        if (implementation == 0xfb55317b42ff15c708ded3036fa17e13455835d28f48eb4a1161f7eb36131b84) return _COLLATERAL_MODULE;
+        if (implementation == 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63) return _POOL_MODULE;
+        if (implementation == 0xfa6e4f9d0b597c15a039f6895e4aff81103501d0f8dfee25e41810095a2c8a97) return _ACCOUNT_MODULE;
         if (implementation == 0xc9e6687d1e56842076df50b114dde00e905e8bd11d86209c52d602d21d389959) return _REWARDS_MANAGER_MODULE;
         if (implementation == 0x96f05ac2ca619e781c735d9ffbef9721b963987bf0176c3762aa3fcd3564e293) return _VAULT_MODULE;
-        if (implementation == 0xfa6e4f9d0b597c15a039f6895e4aff81103501d0f8dfee25e41810095a2c8a97) return _ACCOUNT_MODULE;
+        if (implementation == 0xa63e12e8bb6e563af7bc495445354be8a5238a8023aa4fbaa9556445fa4175ce) return _ASSOCIATE_DEBT_MODULE;
         if (implementation == 0x998d23b15993da38b6b2736be6b65535dff4d29244fe5dc92ba56f5b532ce249) return _CROSS_CHAIN_USDMODULE;
+        if (implementation == 0xbf5819b9d5009a6da1beb7169eb0038218c2af0c6b8adc43a1caabdd075d53b7) return _MARKET_COLLATERAL_MODULE;
+        if (implementation == 0xdb733e1ba5df49132a98655d23d9aa259bb7f8a0d6ba84b3d3bef5cd58ce8fb7) return _CCIP_RECEIVER_MODULE;
+        if (implementation == 0x0068474172de40722e6eab88b0e5c1cc53b5c16809593806d615e599ea81b581) return _COLLATERAL_CONFIGURATION_MODULE;
         if (implementation == 0xef8d3c8ad250455883c6173269ba515637266b803a8393d270f664df6e2c6e80) return _UTILS_MODULE;
-        if (implementation == 0x50df6d567ac8fa7c6e470909cc5f9ff73ab1ae21a4df8de212e92de61d533252) return _ASSOCIATED_SYSTEMS_MODULE;
+        if (implementation == 0xebe07368dc01fbafdae6a99063c723758ec63a852be08716fb7da3afce8c0c3a) return _POOL_CONFIGURATION_MODULE;
+        if (implementation == 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42) return _MARKET_MANAGER_MODULE;
+        if (implementation == 0xfb75d6efbdb0632a474557551464395e52426684b8c8c47d571c945a5808c208) return _LIQUIDATION_MODULE;
+        if (implementation == 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea) return _FEATURE_FLAG_MODULE;
+        if (implementation == 0x65ed98bc6e8636d3e31c70259bddf83fd475024400983114ea42279adf1fd151) return _INITIAL_MODULE_BUNDLE;
     }
 
     fallback() external payable {
