@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.11 <0.9.0;
 
+import {vm} from "test/common/Vm.t.sol";
 
 import {Proxy} from "@synthetixio/main/contracts/Proxy.sol";
 
@@ -37,19 +38,9 @@ import {CoreRouter, ICoreRouter, CollateralConfiguration} from "src/generated/ro
 import {AccountRouter, IAccountRouter} from "src/generated/routers/AccountRouter.g.sol";
 import {USDRouter, IUSDRouter} from "src/generated/routers/USDRouter.g.sol";
 
-import {Test} from "forge-std/Test.sol";
+library SynthetixForkTest {
 
-contract ArbitrumMainnetSynthetixForkTest is Test {
-
-    //Vm internal constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
-
-    address payable constant internal CORE_PROXY = payable(0xffffffaEff0B96Ea8e4f94b2253f31abdD875847);
-    address payable constant internal ACCOUNT_PROXY = payable(0xD935444f5dc75A407ed475C9F387e124911d36C6);
-    address payable constant internal USD_PROXY = payable(0xb2F30A7C980f052f02563fb518dcc39e6bf38175);
-    //address payable constant OWNER = payable(0xD3DFa13CDc7c133b1700c243f03A8C6Df513A93b);
-
-    function upgrade() virtual public {
-
+    function upgrade(address CORE_PROXY, address ACCOUNT_PROXY, address USD_PROXY) public {
         CoreRouter coreRouter = new CoreRouter(CoreRouter.Modules({
             associatedSystemsModule: address(new AssociatedSystemsModule()),
             marketCollateralModule: address(new MarketCollateralModule()),

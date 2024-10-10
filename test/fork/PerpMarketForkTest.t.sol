@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.11 <0.9.0;
 
+import {vm} from "test/common/Vm.t.sol";
 
 import {Proxy} from "@synthetixio/main/contracts/Proxy.sol";
 
@@ -24,14 +25,8 @@ import { MarketConfigurationModule } from "@synthetixio/perps-market/contracts/m
 import { CollateralConfigurationModule } from "@synthetixio/perps-market/contracts/modules/CollateralConfigurationModule.sol";
 import { GlobalPerpsMarketModule } from "@synthetixio/perps-market/contracts/modules/GlobalPerpsMarketModule.sol";
 
-
-import {Test} from "forge-std/Test.sol";
-
-contract ArbitrumMainnetPerpMarketForkTest is Test {
-    //address constant private SPOT_MARKET_PROXY = 0xa65538A6B9A8442854dEcB6E3F85782C60757D60;
-    address payable constant internal PERP_MARKET_PROXY = payable(0xd762960c31210Cf1bDf75b06A5192d395EEDC659);
-
-    function upgrade() virtual public {
+library PerpMarketForkTest {
+    function upgrade(address PERP_MARKET_PROXY) public {
         
         PerpMarketRouter perpMarketRouter = new PerpMarketRouter(PerpMarketRouter.Modules({
             accountModule: address(new AccountModule()),
