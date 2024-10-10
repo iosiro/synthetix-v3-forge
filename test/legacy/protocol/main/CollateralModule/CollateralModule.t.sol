@@ -140,7 +140,7 @@ contract CollateralModuleTest is SynthetixLegacyTestBase {
 
             vm.expectRevert(
                 abi.encodeWithSignature(
-                    "AccountActivityTimeoutPending(uint128,uint256,uint256)", 1, block.timestamp, 181
+                    "AccountActivityTimeoutPending(uint128,uint256,uint256)", 1, block.timestamp, block.timestamp + 180
                 )
             );
             synthetix.withdraw(1, address(collateral), depositAmount);

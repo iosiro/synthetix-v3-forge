@@ -5,12 +5,13 @@ import {Test} from "forge-std/Test.sol";
 
 abstract contract BaseLegacyTest is Test {
 
-    address internal user1 = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
-    address internal user2 = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8;
-    address internal user3 = 0x90F79bf6EB2c4f870365E785982E1f101E93b906;
+    address internal owner = address(this);
+    address internal user1 = vm.addr(1);
+    address internal user2 = vm.addr(2);
+    address internal user3 = vm.addr(3);
     
     function setUp() public virtual {
-        
+        vm.warp(365 days);
     }
 
     modifier as_user(address user) {

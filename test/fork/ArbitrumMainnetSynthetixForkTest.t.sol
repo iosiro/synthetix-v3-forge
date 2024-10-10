@@ -1,7 +1,6 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.11 <0.9.0;
 
-import {Cannon} from "test/cannon/Cannon.sol";
 
 import {Proxy} from "@synthetixio/main/contracts/Proxy.sol";
 
@@ -36,17 +35,22 @@ import {USDTokenModule} from "@synthetixio/main/contracts/modules/usd/USDTokenMo
 
 import {CoreRouter, ICoreRouter, CollateralConfiguration} from "src/generated/routers/CoreRouter.g.sol";
 import {AccountRouter, IAccountRouter} from "src/generated/routers/AccountRouter.g.sol";
-import {USDRouter} from "src/generated/routers/USDRouter.g.sol";
+import {USDRouter, IUSDRouter} from "src/generated/routers/USDRouter.g.sol";
 
-import {IOracleManagerRouter, NodeDefinition} from "src/generated/routers/OracleManagerRouter.g.sol";
+import {Test} from "forge-std/Test.sol";
 
-import "forge-std/console.sol";
-library CannonScript {
-    function deploy() internal {
+contract ArbitrumMainnetSynthetixForkTest is Test {
 
-        // [router.CoreRouter]
-        // [invoke.upgrade_core_proxy]
-        Cannon.register("synthetix.CoreProxy", address(new Proxy(address(new CoreRouter(CoreRouter.Modules({
+    //Vm internal constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
+
+    address payable constant private CORE_PROXY = payable(0xffffffaEff0B96Ea8e4f94b2253f31abdD875847);
+    address payable constant private ACCOUNT_PROXY = payable(0xD935444f5dc75A407ed475C9F387e124911d36C6);
+    address payable constant private USD_PROXY = payable(0xb2F30A7C980f052f02563fb518dcc39e6bf38175);
+    address payable constant OWNER = payable(0xD3DFa13CDc7c133b1700c243f03A8C6Df513A93b);
+
+    function upgrade() virtual public {
+
+        CoreRouter coreRouter = new CoreRouter(CoreRouter.Modules({
             associatedSystemsModule: address(new AssociatedSystemsModule()),
             marketCollateralModule: address(new MarketCollateralModule()),
             rewardsManagerModule: address(new RewardsManagerModule()),
@@ -65,7 +69,7 @@ library CannonScript {
             ccipReceiverModule: address(new CcipReceiverModule()),
             crossChainUSDModule: address(new CrossChainUSDModule()),
             poolConfigurationModule: address(new PoolConfigurationModule())
-        }))), address(this))));
+        }));
 
         // [router.AccountRouter]
         AccountRouter accountRouter = new AccountRouter(AccountRouter.Modules({
@@ -80,80 +84,15 @@ library CannonScript {
             initialModuleBundle: address(new InitialModuleBundle())
         }));
 
-        ICoreRouter coreProxy = ICoreRouter(Cannon.resolve("synthetix.CoreProxy"));
-        IOracleManagerRouter oracleManager = IOracleManagerRouter(Cannon.resolve("oracle-manager.Proxy"));
-
-        // [invoke.init_account]
+        vm.prank(ICoreRouter(CORE_PROXY).owner());
+        ICoreRouter(CORE_PROXY).upgradeTo(address(coreRouter));
         
-        coreProxy.initOrUpgradeNft("accountNft", "Synthetix Account", "SACCT", "https://synthetix.io", address(accountRouter));
-        IAccountRouter accountProxy = IAccountRouter(coreProxy.getAccountTokenAddress());
-        Cannon.register("synthetix.AccountProxy", address(accountProxy));
-
-        // [invoke.init_usd]
-        coreProxy.initOrUpgradeToken("USDToken", "Synthetic USD Token v3", "sUSD", 18, address(usdRouter));
-        USDRouter usdProxy = USDRouter(payable(coreProxy.getUsdToken()));
-        Cannon.register("synthetix.USDProxy", address(usdProxy));
-
-        // [invoke.set_oracle_manager]
-        coreProxy.configureOracleManager(address(oracleManager));
-
-        // [invoke.enable_feature_createAccount]
-        coreProxy.setFeatureFlagAllowAll("createAccount", true);
-
-        // [invoke.enable_feature_deposit]
-        coreProxy.setFeatureFlagAllowAll("deposit", true);
-
-        // [invoke.enable_feature_withdraw]
-        coreProxy.setFeatureFlagAllowAll("withdraw", true);
-
-        // [invoke.enable_feature_mintUsd]
-        coreProxy.setFeatureFlagAllowAll("mintUsd", true);
-
-        // [invoke.enable_feature_burnUsd]
-        coreProxy.setFeatureFlagAllowAll("burnUsd", true);
-
-        // [invoke.enable_feature_liquidate]
-        coreProxy.setFeatureFlagAllowAll("liquidate", true);
-
-        // [invoke.enable_feature_liquidateVault]
-        coreProxy.setFeatureFlagAllowAll("liquidateVault", true);
-
-        // [invoke.enable_feature_depositMarketCollateral]
-        coreProxy.setFeatureFlagAllowAll("depositMarketCollateral", true);
-
-        // [invoke.enable_feature_withdrawMarketCollateral]
-        coreProxy.setFeatureFlagAllowAll("withdrawMarketCollateral", true);
-
-        // [invoke.enable_feature_depositMarketUsd]
-        coreProxy.setFeatureFlagAllowAll("depositMarketUsd", true);
-
-        // [invoke.enable_feature_withdrawMarketUsd]
-        coreProxy.setFeatureFlagAllowAll("withdrawMarketUsd", true);
-
-        // [invoke.enable_feature_claimRewards]
-        coreProxy.setFeatureFlagAllowAll("claimRewards", true);
-
-        // [invoke.enable_feature_delegateCollateral]
-        coreProxy.setFeatureFlagAllowAll("delegateCollateral", true);
-
-        // [invoke.register_const_one_oracle]
-        bytes32 const_one_oracle_id;
-        {
-            bytes32[] memory args;
-            const_one_oracle_id = oracleManager.registerNode(NodeDefinition.NodeType.wrap(8), abi.encode([uint256(1 ether)]), args);
-        }
-
-        // [invoke.configure_usd_collateral]
-        {
-            coreProxy.configureCollateral(CollateralConfiguration.Data({
-                tokenAddress: Cannon.resolve("synthetix.USDProxy"), 
-                oracleNodeId: const_one_oracle_id,
-                issuanceRatioD18: 10 ether,
-                liquidationRatioD18: 10 ether,
-                liquidationRewardD18: 0,
-                minDelegationD18: type(uint256).max,
-                depositingEnabled: true
-            }));
-        }
+        vm.prank(IAccountRouter(ACCOUNT_PROXY).owner());
+        IAccountRouter(ACCOUNT_PROXY).upgradeTo(address(accountRouter));
+        
+        vm.prank(IUSDRouter(USD_PROXY).owner());        
+        IUSDRouter(USD_PROXY).upgradeTo(address(usdRouter));
     }
+    
+
 }

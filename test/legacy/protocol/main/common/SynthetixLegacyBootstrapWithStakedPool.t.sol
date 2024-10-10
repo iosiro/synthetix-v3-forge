@@ -44,7 +44,7 @@ contract SynthetixLegacyBootstrapWithStakedPool is SynthetixLegacyTestBase {
         mock.initialize("Mock", "MOCK", 18);
         collateral = IERC20(address(mock));
 
-        (oracleNodeId, aggregator) = createOracleNode(1);
+        (oracleNodeId, aggregator) = createOracleNode(1 ether);
         ICollateralConfigurationModule(address(synthetix)).configureCollateral(
             CollateralConfiguration.Data({
                 tokenAddress: address(collateral),
@@ -62,7 +62,7 @@ contract SynthetixLegacyBootstrapWithStakedPool is SynthetixLegacyTestBase {
 
         mock.mint(user1, 1_000_000 ether);
 
-        vm.startPrank(address(user1));
+        vm.startPrank(user1);
         accountId = synthetix.createAccount();
         collateral.approve(address(synthetix), 10_000 ether);
         ICollateralModule(address(synthetix)).deposit(accountId, address(collateral), 1000 ether);

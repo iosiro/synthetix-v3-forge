@@ -36,6 +36,8 @@ contract SynthetixLegacyTestBase is BaseLegacyTest {
 
 
     function setUp() public virtual override {
+        super.setUp();
+        
         OracleManager.deploy();
         Synthetix.deploy();
         
@@ -49,12 +51,10 @@ contract SynthetixLegacyTestBase is BaseLegacyTest {
         internal
         returns (CollateralMock collateral, AggregatorV3Mock aggregator, bytes32 oracleNodeId, uint256 collateralPrice)
     {
-        collateralPrice = 1;
-
         collateral = new CollateralMock();
         collateral.initialize(string(abi.encodePacked(tokenName)), string(abi.encodePacked(tokenSymbol)), 6);
 
-        (oracleNodeId, aggregator) = createOracleNode(collateralPrice);
+        (oracleNodeId, aggregator) = createOracleNode(1 ether);
 
         ICollateralConfigurationModule(address(synthetix)).configureCollateral(
             CollateralConfiguration.Data({
@@ -98,7 +98,7 @@ contract SynthetixLegacyTestBase is BaseLegacyTest {
 
         CollateralMock mock = new CollateralMock();
 
-        (oracleNodeId, aggregator) = createOracleNode(1);
+        (oracleNodeId, aggregator) = createOracleNode(1 ether);
         ICollateralConfigurationModule(address(synthetix)).configureCollateral(
             CollateralConfiguration.Data({
                 tokenAddress: address(collateral),
