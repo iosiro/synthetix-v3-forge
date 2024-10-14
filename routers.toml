@@ -1,0 +1,94 @@
+[router.OracleManagerRouter]
+modules = [
+    "@synthetixio/oracle-manager/contracts/modules/NodeModule.sol:NodeModule",
+    "@synthetixio/oracle-manager/contracts/modules/CoreModule.sol:CoreModule",
+]
+
+[router.CoreRouter]
+modules = [
+    "@synthetixio/main/contracts/modules/InitialModuleBundle.sol:InitialModuleBundle",
+    "@synthetixio/main/contracts/modules/core/FeatureFlagModule.sol:FeatureFlagModule",
+    "@synthetixio/main/contracts/modules/core/AccountModule.sol:AccountModule",
+    "@synthetixio/main/contracts/modules/core/AssociateDebtModule.sol:AssociateDebtModule",
+    "@synthetixio/main/contracts/modules/associated-systems/AssociatedSystemsModule.sol:AssociatedSystemsModule",
+    "@synthetixio/main/contracts/modules/core/CcipReceiverModule.sol:CcipReceiverModule",
+    "@synthetixio/main/contracts/modules/core/CollateralModule.sol:CollateralModule",
+    "@synthetixio/main/contracts/modules/core/CollateralConfigurationModule.sol:CollateralConfigurationModule",
+    "@synthetixio/main/contracts/modules/core/CrossChainUSDModule.sol:CrossChainUSDModule",
+    "@synthetixio/main/contracts/modules/core/IssueUSDModule.sol:IssueUSDModule",
+    "@synthetixio/main/contracts/modules/core/LiquidationModule.sol:LiquidationModule",
+    "@synthetixio/main/contracts/modules/core/MarketCollateralModule.sol:MarketCollateralModule",
+    "@synthetixio/main/contracts/modules/core/MarketManagerModule.sol:MarketManagerModule",
+    "@synthetixio/main/contracts/modules/core/PoolConfigurationModule.sol:PoolConfigurationModule",
+    "@synthetixio/main/contracts/modules/core/PoolModule.sol:PoolModule",
+    "@synthetixio/main/contracts/modules/core/RewardsManagerModule.sol:RewardsManagerModule",
+    "@synthetixio/main/contracts/modules/core/UtilsModule.sol:UtilsModule",
+    "@synthetixio/main/contracts/modules/core/VaultModule.sol:VaultModule",
+]
+
+[router.AccountRouter]
+modules = [
+    "@synthetixio/main/contracts/modules/InitialModuleBundle.sol:InitialModuleBundle",
+    "@synthetixio/main/contracts/modules/account/AccountTokenModule.sol:AccountTokenModule",
+]
+
+[router.USDRouter]
+modules = [
+    "@synthetixio/main/contracts/modules/InitialModuleBundle.sol:InitialModuleBundle",
+    "@synthetixio/main/contracts/modules/associated-systems/AssociatedSystemsModule.sol:AssociatedSystemsModule",
+    "@synthetixio/main/contracts/modules/usd/USDTokenModule.sol:USDTokenModule",
+]
+
+[router.SynthRouter]
+modules = [
+    "@synthetixio/spot-market/contracts/modules/CoreModule.sol:CoreModule",
+    "@synthetixio/spot-market/contracts/modules/token/SynthTokenModule.sol:SynthTokenModule",
+]
+
+[router.SpotMarketRouter]
+modules = [
+    "@synthetixio/spot-market/contracts/modules/CoreModule.sol:CoreModule",
+    "@synthetixio/spot-market/contracts/modules/SpotMarketFactoryModule.sol:SpotMarketFactoryModule",
+    "@synthetixio/spot-market/contracts/modules/AtomicOrderModule.sol:AtomicOrderModule",
+    "@synthetixio/spot-market/contracts/modules/AsyncOrderModule.sol:AsyncOrderModule",
+    "@synthetixio/spot-market/contracts/modules/AsyncOrderSettlementModule.sol:AsyncOrderSettlementModule",
+    "@synthetixio/spot-market/contracts/modules/AsyncOrderConfigurationModule.sol:AsyncOrderConfigurationModule",
+    "@synthetixio/spot-market/contracts/modules/WrapperModule.sol:WrapperModule",
+    "@synthetixio/spot-market/contracts/modules/MarketConfigurationModule.sol:MarketConfigurationModule",
+    "@synthetixio/spot-market/contracts/modules/FeatureFlagModule.sol:FeatureFlagModule",
+]
+
+[router.PerpMarketRouter]
+modules = [
+    "@synthetixio/main/contracts/modules/core/AccountModule.sol:AccountModule",
+    "@synthetixio/main/contracts/modules/associated-systems/AssociatedSystemsModule.sol:AssociatedSystemsModule",
+    "@synthetixio/perps-market/contracts/modules/CoreModule.sol:CoreModule",
+    "@synthetixio/perps-market/contracts/modules/PerpsMarketFactoryModule.sol:PerpsMarketFactoryModule",
+    "@synthetixio/perps-market/contracts/modules/PerpsAccountModule.sol:PerpsAccountModule",
+    "@synthetixio/perps-market/contracts/modules/PerpsMarketModule.sol:PerpsMarketModule",
+    "@synthetixio/perps-market/contracts/modules/AsyncOrderModule.sol:AsyncOrderModule",
+    "@synthetixio/perps-market/contracts/modules/AsyncOrderSettlementPythModule.sol:AsyncOrderSettlementPythModule",
+    "@synthetixio/perps-market/contracts/modules/AsyncOrderCancelModule.sol:AsyncOrderCancelModule",
+    "@synthetixio/perps-market/contracts/modules/FeatureFlagModule.sol:FeatureFlagModule",
+    "@synthetixio/perps-market/contracts/modules/LiquidationModule.sol:LiquidationModule",
+    "@synthetixio/perps-market/contracts/modules/MarketConfigurationModule.sol:MarketConfigurationModule",
+    "@synthetixio/perps-market/contracts/modules/CollateralConfigurationModule.sol:CollateralConfigurationModule",
+    "@synthetixio/perps-market/contracts/modules/GlobalPerpsMarketModule.sol:GlobalPerpsMarketModule",
+]
+
+[router.BfpMarketRouter]
+modules = [
+    "@synthetixio/main/contracts/modules/core/AccountModule.sol:AccountModule",
+    "@synthetixio/main/contracts/modules/associated-systems/AssociatedSystemsModule.sol:AssociatedSystemsModule",
+    "@synthetixio/bfp-market/contracts/modules/CoreModule.sol:CoreModule",
+    "@synthetixio/bfp-market/contracts/modules/FeatureFlagModule.sol:FeatureFlagModule",
+    "@synthetixio/bfp-market/contracts/modules/PerpMarketFactoryModule.sol:PerpMarketFactoryModule",
+    "@synthetixio/bfp-market/contracts/modules/MarketConfigurationModule.sol:MarketConfigurationModule",
+    "@synthetixio/bfp-market/contracts/modules/PerpAccountModule.sol:PerpAccountModule",
+    "@synthetixio/bfp-market/contracts/modules/MarginModule.sol:MarginModule",
+    "@synthetixio/bfp-market/contracts/modules/OrderModule.sol:OrderModule",
+    "@synthetixio/bfp-market/contracts/modules/LiquidationModule.sol:LiquidationModule",
+    "@synthetixio/bfp-market/contracts/modules/PerpRewardDistributorModule/PerpRewardDistributorFactoryModule.sol:PerpRewardDistributorFactoryModule",
+    "@synthetixio/bfp-market/contracts/modules/SettlementHookModule.sol:SettlementHookModule",
+    "@synthetixio/bfp-market/contracts/modules/SplitAccountConfigurationModule.sol:SplitAccountConfigurationModule",
+]

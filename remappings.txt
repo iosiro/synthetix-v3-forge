@@ -1,0 +1,12 @@
+@synthetixio/main/contracts/=lib/synthetix-v3/protocol/synthetix/contracts/
+@synthetixio/core-contracts/contracts/=lib/synthetix-v3/utils/core-contracts/contracts/
+@synthetixio/core-modules/contracts/=lib/synthetix-v3/utils/core-modules/contracts/
+@synthetixio/oracle-manager/contracts/=lib/synthetix-v3/protocol/oracle-manager/contracts/
+@synthetixio/spot-market/contracts/=lib/synthetix-v3/markets/spot-market/contracts/
+@synthetixio/legacy-market/contracts/=lib/synthetix-v3/markets/legacy-market/contracts/
+@synthetixio/perps-market/contracts/=lib/synthetix-v3/markets/perps-market/contracts/
+@synthetixio/rewards-distributor/=lib/synthetix-v3/auxiliary/RewardsDistributor/
+@synthetixio/core-contracts/contracts/=lib/synthetix-v3/utils/core-contracts/contracts/
+@synthetixio/bfp-market/contracts/=lib/synthetix-v3/markets/bfp-market/contracts/
+
+@openzeppelin/contracts/proxy/=src/hack/openzeppelin/proxy/
