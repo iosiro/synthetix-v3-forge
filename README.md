@@ -11,10 +11,12 @@ This repository uses an adapted Router architecture that leverages `immutable` m
 
 ### Foundry
 
-Make sure all the latest version of `foundry` as been installed. 
+Make sure all the latest version of `foundry` as been installed and that all submodules are updated. 
 
 ```shell
 foundryup
+
+forge install
 ```
 
 ### cannon-rs
@@ -33,6 +35,14 @@ cannon-rs generate immutable-router --toml routers.toml
 ```
 
 If new modules are added to a router, update the relevant router definition in the `routers.toml` file.
+
+### Development
+
+Synthetix V3 `main` branch is checked out as a submodule under `lib/synthetix-v3`. All development changes should be directly within the submodule. When testing a specific branch, the submodule can be updated:
+
+```
+cd lib/synthetix-v3 && git fetch && git checkout target-branch
+```
 
 ## Testing
 
