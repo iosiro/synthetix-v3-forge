@@ -1,12 +1,11 @@
 ## Synthetix V3 Forge
 
-** This project aims to enable developers and auditors to quickly test the Synthetix V3 ecosystem. **
+**This project aims to enable developers and auditors to quickly test the Synthetix V3 ecosystem.**
 
 Synthetix V3 is built using Hardhat and Cannon, which are not optimized for rapid prototyping and testing. Although Cannon's strict package usage allows declarative deployments, it can create a bottleneck during early development and testing. Rebuilding packages and rerunning tests can take several minutes with each change.
 
-This repository uses an adapted Router architecture that leverages immutable modules instead of deterministic ones. This allows for the runtime deployment of routers and modules in Forge tests. While the Immutable Router incurs a slight gas overhead, it does not alter the overall architecture of Synthetix V3.
+This repository uses an adapted Router architecture that leverages `immutable` modules instead of deterministic ones. This allows for the runtime deployment of routers and modules in Forge tests. While the Immutable Router incurs a slight gas overhead, it does not alter the overall architecture of Synthetix V3.
 
-This repository makes use of an adapted Router architecture that leverages `immutable` modules instead of deterministic modules, allowing runtime deployment of routers and modules in forge tests. The Immutable Router incurs a slight gas overhead, but overall does not change the architecture of Synthetix V3.
 
 ## Getting Started
 
