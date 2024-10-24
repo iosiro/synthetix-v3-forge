@@ -29,7 +29,7 @@ import {CollateralConfigurationModule} from
 import {GlobalPerpsMarketModule} from "@synthetixio/perps-market/contracts/modules/GlobalPerpsMarketModule.sol";
 
 library PerpMarketForkTest {
-    function upgrade(address PERP_MARKET_PROXY) public {
+    function upgrade(address PERP_MARKET_PROXY, address CORE_PROXY) public {
         PerpMarketRouter perpMarketRouter = new PerpMarketRouter(
             PerpMarketRouter.Modules({
                 accountModule: address(new AccountModule()),
@@ -45,7 +45,7 @@ library PerpMarketForkTest {
                 liquidationModule: address(new LiquidationModule()),
                 marketConfigurationModule: address(new MarketConfigurationModule()),
                 collateralConfigurationModule: address(new CollateralConfigurationModule()),
-                globalPerpsMarketModule: address(new GlobalPerpsMarketModule())
+                globalPerpsMarketModule: address(new GlobalPerpsMarketModule(CORE_PROXY))
             })
         );
 
