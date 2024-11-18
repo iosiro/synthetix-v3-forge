@@ -38,7 +38,7 @@ contract ArbitrumMainnetForkTest is Test {
     function upgrade() public {
         SynthetixForkTest.upgrade({CORE_PROXY: CORE_PROXY, ACCOUNT_PROXY: ACCOUNT_PROXY, USD_PROXY: USD_PROXY});
         OracleManagerForkTest.upgrade({ORACLE_MANAGER_PROXY: ORACLE_MANAGER_PROXY});
-        PerpMarketForkTest.upgrade({PERP_MARKET_PROXY: PERP_MARKET_PROXY, CORE_PROXY: CORE_PROXY});
+        PerpMarketForkTest.upgrade({PERP_MARKET_PROXY: PERP_MARKET_PROXY});
         SpotMarketForkTest.upgrade({SPOT_MARKET_PROXY: SPOT_MARKET_PROXY});
     }
 
