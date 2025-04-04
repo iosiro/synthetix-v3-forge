@@ -27,17 +27,23 @@ contract BaseMainnetForkTest is Test {
 
     // Collaterals
     address payable internal constant COLLATERAL_USDC = payable(0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913);
-    address payable internal constant COLLATERAL_sUSDC = payable(0xC74eA762cF06c9151cE074E6a569a5945b6302E7);
     address payable internal constant COLLATERAL_stataUSDC = payable(0x4EA71A20e655794051D1eE8b6e4A3269B13ccaCc);
-    address payable internal constant COLLATERAL_sstataUSDC = payable(0x729Ef31D86d31440ecBF49f27F7cD7c16c6616d2);
+    address payable internal constant COLLATERAL_cbBTC = payable(0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf);
+    address payable internal constant COLLATERAL_cbETH = payable(0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22);
+    address payable internal constant COLLATERAL_WETH = payable(0x4200000000000000000000000000000000000006);
+    address payable internal constant COLLATERAL_wstETH = payable(0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452);
 
     // Synths
     address payable internal SYNTH_USDC = payable(0xC74eA762cF06c9151cE074E6a569a5945b6302E7);
     address payable internal SYNTH_stataUSDC = payable(0x729Ef31D86d31440ecBF49f27F7cD7c16c6616d2);
+    address payable internal constant SYNTH_cbBTC = payable(0xEDE1d04C864EeEC40393ED4cb454B85A5ABD071C);
+    address payable internal constant SYNTH_cbETH = payable(0xc302f3f74ec19d0917C7F19Bca6775f7000a292a);
+    address payable internal constant SYNTH_WETH = payable(0xFA24Be208408F20395914Ba82Def333d987E0080);
+    address payable internal constant SYNTH_wstETH = payable(0x3526D453D1Edb105E4e2b8448760fC501050d976);
 
     // Misc
     address payable internal constant TRUSTED_MULTICALL_FORWARDER = payable(0xE2C5658cC5C448B48141168f3e475dF8f65A1e3e);
-    address payable internal PYTH_ERC7412_WRAPPER = payable(0x3FC194FA6C26BE94Fc404E69b51793c199c3BF52);
+    address payable internal PYTH_ERC7412_WRAPPER = payable(0x9Cb0B428632fc7dC56FDf453aEd890BA55B1953a);
 
     function upgrade() public {
         SynthetixForkTest.upgrade({CORE_PROXY: CORE_PROXY, ACCOUNT_PROXY: ACCOUNT_PROXY, USD_PROXY: USD_PROXY});
@@ -46,7 +52,7 @@ contract BaseMainnetForkTest is Test {
         SpotMarketForkTest.upgrade({SPOT_MARKET_PROXY: SPOT_MARKET_PROXY});
     }
 
-    function setUp() public {
+    function setUp() public virtual {
         upgrade();
     }
 }

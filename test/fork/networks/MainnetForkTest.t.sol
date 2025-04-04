@@ -5,6 +5,7 @@ import {SynthetixForkTest} from "test/fork/deployments/SynthetixForkTest.t.sol";
 import {OracleManagerForkTest} from "test/fork/deployments/OracleManagerForkTest.t.sol";
 import {PerpMarketForkTest} from "test/fork/deployments/PerpMarketForkTest.t.sol";
 import {SpotMarketForkTest} from "test/fork/deployments/SpotMarketForkTest.t.sol";
+import {LegacyMarketForkTest} from "test/fork/deployments/LegacyMarketForkTest.t.sol";
 
 import {IOracleManagerRouter} from "src/generated/routers/OracleManagerRouter.g.sol";
 import {ICoreRouter} from "src/generated/routers/CoreRouter.g.sol";
@@ -23,6 +24,7 @@ contract MainnetForkTest is Test {
     address payable internal constant USD_PROXY = payable(0xb2F30A7C980f052f02563fb518dcc39e6bf38175);
     address payable internal constant SPOT_MARKET_PROXY = payable(0x2CD12CcAc6F869650bA88a220b2eb91a937FA5c0);
     address payable internal constant LEGACY_MARKET_PROXY = payable(0x3AcF163B9E6a384D539e10dAc7e11213c638b2f5);
+    address payable internal constant TREASURY_MARKET_PROXY = payable(0x7b952507306E7D983bcFe6942Ac9F2f75C1332D8);
 
     // Collaterals
     address payable internal constant COLLATERAL_SNX = payable(0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F);
@@ -42,9 +44,10 @@ contract MainnetForkTest is Test {
         OracleManagerForkTest.upgrade({ORACLE_MANAGER_PROXY: ORACLE_MANAGER_PROXY});
         // PerpMarketForkTest.upgrade({PERP_MARKET_PROXY: PERP_MARKET_PROXY});
         SpotMarketForkTest.upgrade({SPOT_MARKET_PROXY: SPOT_MARKET_PROXY});
+        LegacyMarketForkTest.upgrade({LEGACY_MARKET_PROXY: LEGACY_MARKET_PROXY});
     }
 
-    function setUp() public {
+    function setUp() public virtual {
         upgrade();
     }
 }

@@ -42,7 +42,7 @@ contract ArbitrumMainnetForkTest is Test {
         SpotMarketForkTest.upgrade({SPOT_MARKET_PROXY: SPOT_MARKET_PROXY});
     }
 
-    function setUp() virtual public {
+    function setUp() public virtual {
         upgrade();
     }
 }

@@ -8,5 +8,5 @@
 @synthetixio/rewards-distributor/=lib/synthetix-v3/auxiliary/RewardsDistributor/
 @synthetixio/core-contracts/contracts/=lib/synthetix-v3/utils/core-contracts/contracts/
 @synthetixio/bfp-market/contracts/=lib/synthetix-v3/markets/bfp-market/contracts/
-
+@synthetixio/treasury-market/contracts/=lib/synthetix-v3/markets/treasury-market/contracts/
 @openzeppelin/contracts/proxy/=src/hack/openzeppelin/proxy/
