@@ -28,6 +28,7 @@ interface IOracleManagerRouter {
     function nominatedOwner() external view returns (address);
     function owner() external view returns (address);
     function process(bytes32 nodeId) external view returns (NodeOutput.Data memory node);
+    function processManyWithManyRuntime(bytes32[] memory nodeIds, bytes32[][] memory runtimeKeys, bytes32[][] memory runtimeValues) external view returns (NodeOutput.Data[] memory nodes);
     function processManyWithRuntime(bytes32[] memory nodeIds, bytes32[] memory runtimeKeys, bytes32[] memory runtimeValues) external view returns (NodeOutput.Data[] memory nodes);
     function processWithRuntime(bytes32 nodeId, bytes32[] memory runtimeKeys, bytes32[] memory runtimeValues) external view returns (NodeOutput.Data memory node);
     function registerNode(NodeDefinition.NodeType nodeType, bytes memory parameters, bytes32[] memory parents) external returns (bytes32 nodeId);
@@ -66,7 +67,7 @@ contract OracleManagerRouter {
             let sig32 := shr(224, sig4)
 
             function findImplementation(sig) -> result {
-                if lt(sig, 0x718fe928) {
+                if lt(sig, 0x79ba5097) {
                     switch sig
                         case 0x05d73a25 { result := 0x791d80463336abffbe645eeab28553a6357a4eb160b9c3b9a79da8e952720e09 } // NodeModule.processManyWithRuntime()
                         case 0x1627540c { result := 0x4244fcb9e04b991a1f0644ba7d86c296f089ca67c187f14cda4939cff7f6d936 } // CoreModule.nominateNewOwner()
@@ -75,11 +76,12 @@ contract OracleManagerRouter {
                         case 0x50c946fe { result := 0x791d80463336abffbe645eeab28553a6357a4eb160b9c3b9a79da8e952720e09 } // NodeModule.getNode()
                         case 0x53a47bb7 { result := 0x4244fcb9e04b991a1f0644ba7d86c296f089ca67c187f14cda4939cff7f6d936 } // CoreModule.nominatedOwner()
                         case 0x625ca21c { result := 0x791d80463336abffbe645eeab28553a6357a4eb160b9c3b9a79da8e952720e09 } // NodeModule.getNodeId()
+                        case 0x718fe928 { result := 0x4244fcb9e04b991a1f0644ba7d86c296f089ca67c187f14cda4939cff7f6d936 } // CoreModule.renounceNomination()
                     leave
                 }
                 switch sig
-                    case 0x718fe928 { result := 0x4244fcb9e04b991a1f0644ba7d86c296f089ca67c187f14cda4939cff7f6d936 } // CoreModule.renounceNomination()
                     case 0x79ba5097 { result := 0x4244fcb9e04b991a1f0644ba7d86c296f089ca67c187f14cda4939cff7f6d936 } // CoreModule.acceptOwnership()
+                    case 0x8461e0d9 { result := 0x791d80463336abffbe645eeab28553a6357a4eb160b9c3b9a79da8e952720e09 } // NodeModule.processManyWithManyRuntime()
                     case 0x8da5cb5b { result := 0x4244fcb9e04b991a1f0644ba7d86c296f089ca67c187f14cda4939cff7f6d936 } // CoreModule.owner()
                     case 0xaaf10f42 { result := 0x4244fcb9e04b991a1f0644ba7d86c296f089ca67c187f14cda4939cff7f6d936 } // CoreModule.getImplementation()
                     case 0xc7f62cda { result := 0x4244fcb9e04b991a1f0644ba7d86c296f089ca67c187f14cda4939cff7f6d936 } // CoreModule.simulateUpgradeTo()

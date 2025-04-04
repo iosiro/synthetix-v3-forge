@@ -111,8 +111,10 @@ interface ICoreRouter {
     function getFeatureFlagAllowlist(bytes32 feature) external view returns (address[] memory);
     function getFeatureFlagDenyAll(bytes32 feature) external view returns (bool);
     function getImplementation() external view returns (address);
+    function getLastDelegationTime(uint128 accountId, uint128 poolId, address collateralType) external view returns (uint256 lastDelegationTime);
     function getLocks(uint128 accountId, address collateralType, uint256 offset, uint256 count) external view returns (CollateralLock.Data[] memory locks);
     function getMarketAddress(uint128 marketId) external view returns (address);
+    function getMarketCapacityContributionFromPool(uint128 marketId, uint128 poolId) external view returns (uint256);
     function getMarketCollateral(uint128 marketId) external view returns (uint256);
     function getMarketCollateralAmount(uint128 marketId, address collateralType) external view returns (uint256 collateralAmountD18);
     function getMarketCollateralValue(uint128 marketId) external view returns (uint256);
@@ -121,6 +123,7 @@ interface ICoreRouter {
     function getMarketMinDelegateTime(uint128 marketId) external view returns (uint32);
     function getMarketNetIssuance(uint128 marketId) external view returns (int128);
     function getMarketPoolDebtDistribution(uint128 marketId, uint128 poolId) external returns (uint256 sharesD18, uint128 totalSharesD18, int128 valuePerShareD27);
+    function getMarketPoolMaxDebtPerShare(uint128 marketId, uint128 poolId) external view returns (int256);
     function getMarketPools(uint128 marketId) external returns (uint128[] memory inRangePoolIds, uint128[] memory outRangePoolIds);
     function getMarketReportedDebt(uint128 marketId) external view returns (uint256);
     function getMarketTotalDebt(uint128 marketId) external view returns (int256);
@@ -132,8 +135,10 @@ interface ICoreRouter {
     function getPoolCollateralConfiguration(uint128 poolId, address collateralType) external view returns (PoolCollateralConfiguration.Data memory config);
     function getPoolCollateralIssuanceRatio(uint128 poolId, address collateral) external view returns (uint256);
     function getPoolConfiguration(uint128 poolId) external view returns (MarketConfiguration.Data[] memory);
+    function getPoolDebtPerShare(uint128 poolId) external returns (int256 debtPerShareD18);
     function getPoolName(uint128 poolId) external view returns (string memory poolName);
     function getPoolOwner(uint128 poolId) external view returns (address);
+    function getPoolTotalDebt(uint128 poolId) external returns (int256 totalDebtD18);
     function getPosition(uint128 accountId, uint128 poolId, address collateralType) external returns (uint256 collateralAmount, uint256 collateralValue, int256 debt, uint256 collateralizationRatio);
     function getPositionCollateral(uint128 accountId, uint128 poolId, address collateralType) external view returns (uint256 amount);
     function getPositionCollateralRatio(uint128 accountId, uint128 poolId, address collateralType) external returns (uint256);
@@ -157,7 +162,9 @@ interface ICoreRouter {
     function isTrustedForwarder(address forwarder) external pure returns (bool);
     function isVaultLiquidatable(uint128 poolId, address collateralType) external returns (bool);
     function liquidate(uint128 accountId, uint128 poolId, address collateralType, uint128 liquidateAsAccountId) external returns (ILiquidationModule.LiquidationData memory liquidationData);
+    function liquidateToTreasury(uint128 accountId, uint128 poolId, address collateralType) external returns (ILiquidationModule.LiquidationData memory liquidationData);
     function liquidateVault(uint128 poolId, address collateralType, uint128 liquidateAsAccountId, uint256 maxUsd) external returns (ILiquidationModule.LiquidationData memory liquidationData);
+    function migrateDelegation(uint128 accountId, uint128 oldPoolId, address collateralType, uint128 newPoolId) external;
     function mintUsd(uint128 accountId, uint128 poolId, address collateralType, uint256 amount) external;
     function nominateNewOwner(address newNominatedOwner) external;
     function nominatePoolOwner(address nominatedOwner, uint128 poolId) external;
@@ -296,7 +303,7 @@ contract CoreRouter {
             function findImplementation(sig) -> result {
                 if lt(sig, 0x830e23b5) {
                     if lt(sig, 0x3b390b57) {
-                        if lt(sig, 0x198f0aa1) {
+                        if lt(sig, 0x1b5dccdb) {
                             if lt(sig, 0x11e72a43) {
                                 switch sig
                                     case 0x00cd9ef3 { result := 0xfa6e4f9d0b597c15a039f6895e4aff81103501d0f8dfee25e41810095a2c8a97 } // AccountModule.grantPermission()
@@ -319,11 +326,11 @@ contract CoreRouter {
                                 case 0x1627540c { result := 0x65ed98bc6e8636d3e31c70259bddf83fd475024400983114ea42279adf1fd151 } // InitialModuleBundle.nominateNewOwner()
                                 case 0x170c1351 { result := 0xc9e6687d1e56842076df50b114dde00e905e8bd11d86209c52d602d21d389959 } // RewardsManagerModule.registerRewardsDistributor()
                                 case 0x183231d7 { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.rebalancePool()
+                                case 0x198f0aa1 { result := 0xfb55317b42ff15c708ded3036fa17e13455835d28f48eb4a1161f7eb36131b84 } // CollateralModule.cleanExpiredLocks()
                             leave
                         }
                         if lt(sig, 0x2d22bef9) {
                             switch sig
-                                case 0x198f0aa1 { result := 0xfb55317b42ff15c708ded3036fa17e13455835d28f48eb4a1161f7eb36131b84 } // CollateralModule.cleanExpiredLocks()
                                 case 0x1b5dccdb { result := 0xfa6e4f9d0b597c15a039f6895e4aff81103501d0f8dfee25e41810095a2c8a97 } // AccountModule.getAccountLastInteraction()
                                 case 0x1d90e392 { result := 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42 } // MarketManagerModule.setMarketMinDelegateTime()
                                 case 0x1eb60770 { result := 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42 } // MarketManagerModule.getWithdrawableMarketUsd()
@@ -332,6 +339,7 @@ contract CoreRouter {
                                 case 0x25eeea4b { result := 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42 } // MarketManagerModule.getMarketPoolDebtDistribution()
                                 case 0x2685f42b { result := 0xc9e6687d1e56842076df50b114dde00e905e8bd11d86209c52d602d21d389959 } // RewardsManagerModule.removeRewardsDistributor()
                                 case 0x2a5354d2 { result := 0xfb75d6efbdb0632a474557551464395e52426684b8c8c47d571c945a5808c208 } // LiquidationModule.isVaultLiquidatable()
+                                case 0x2ad71386 { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.getPoolDebtPerShare()
                             leave
                         }
                         switch sig
@@ -345,7 +353,7 @@ contract CoreRouter {
                             case 0x3659cfe6 { result := 0x65ed98bc6e8636d3e31c70259bddf83fd475024400983114ea42279adf1fd151 } // InitialModuleBundle.upgradeTo()
                         leave
                     }
-                    if lt(sig, 0x60248c55) {
+                    if lt(sig, 0x60988e09) {
                         if lt(sig, 0x51a40994) {
                             switch sig
                                 case 0x3b390b57 { result := 0xebe07368dc01fbafdae6a99063c723758ec63a852be08716fb7da3afce8c0c3a } // PoolConfigurationModule.getPreferredPool()
@@ -368,11 +376,11 @@ contract CoreRouter {
                             case 0x5a7ff7c5 { result := 0xc9e6687d1e56842076df50b114dde00e905e8bd11d86209c52d602d21d389959 } // RewardsManagerModule.distributeRewards()
                             case 0x5d8c8844 { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.setPoolConfiguration()
                             case 0x5e52ad6e { result := 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea } // FeatureFlagModule.setFeatureFlagDenyAll()
+                            case 0x60248c55 { result := 0x96f05ac2ca619e781c735d9ffbef9721b963987bf0176c3762aa3fcd3564e293 } // VaultModule.getVaultCollateralRatio()
                         leave
                     }
-                    if lt(sig, 0x718fe928) {
+                    if lt(sig, 0x75bf2444) {
                         switch sig
-                            case 0x60248c55 { result := 0x96f05ac2ca619e781c735d9ffbef9721b963987bf0176c3762aa3fcd3564e293 } // VaultModule.getVaultCollateralRatio()
                             case 0x60988e09 { result := 0x50df6d567ac8fa7c6e470909cc5f9ff73ab1ae21a4df8de212e92de61d533252 } // AssociatedSystemsModule.getAssociatedSystem()
                             case 0x6141f7a2 { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.nominatePoolOwner()
                             case 0x644cb0f3 { result := 0x0068474172de40722e6eab88b0e5c1cc53b5c16809593806d615e599ea81b581 } // CollateralConfigurationModule.configureCollateral()
@@ -380,12 +388,14 @@ contract CoreRouter {
                             case 0x6dd5b69d { result := 0xef8d3c8ad250455883c6173269ba515637266b803a8393d270f664df6e2c6e80 } // UtilsModule.getConfig()
                             case 0x6fd5bdce { result := 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42 } // MarketManagerModule.setMinLiquidityRatio()
                             case 0x715cb7d2 { result := 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea } // FeatureFlagModule.setDeniers()
+                            case 0x718fe928 { result := 0x65ed98bc6e8636d3e31c70259bddf83fd475024400983114ea42279adf1fd151 } // InitialModuleBundle.renounceNomination()
+                            case 0x741a5d3f { result := 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42 } // MarketManagerModule.getMarketCapacityContributionFromPool()
                         leave
                     }
                     switch sig
-                        case 0x718fe928 { result := 0x65ed98bc6e8636d3e31c70259bddf83fd475024400983114ea42279adf1fd151 } // InitialModuleBundle.renounceNomination()
                         case 0x75bf2444 { result := 0x0068474172de40722e6eab88b0e5c1cc53b5c16809593806d615e599ea81b581 } // CollateralConfigurationModule.getCollateralConfigurations()
                         case 0x79ba5097 { result := 0x65ed98bc6e8636d3e31c70259bddf83fd475024400983114ea42279adf1fd151 } // InitialModuleBundle.acceptOwnership()
+                        case 0x7a75c869 { result := 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42 } // MarketManagerModule.getMarketPoolMaxDebtPerShare()
                         case 0x7b0532a4 { result := 0x96f05ac2ca619e781c735d9ffbef9721b963987bf0176c3762aa3fcd3564e293 } // VaultModule.delegateCollateral()
                         case 0x7cc14a92 { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.renouncePoolOwnership()
                         case 0x7d632bd2 { result := 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea } // FeatureFlagModule.setFeatureFlagAllowAll()
@@ -393,7 +403,7 @@ contract CoreRouter {
                         case 0x7dec8b55 { result := 0xfa6e4f9d0b597c15a039f6895e4aff81103501d0f8dfee25e41810095a2c8a97 } // AccountModule.notifyAccountTransfer()
                     leave
                 }
-                if lt(sig, 0xc4b3410e) {
+                if lt(sig, 0xc2b0cf41) {
                     if lt(sig, 0xa4e6306b) {
                         if lt(sig, 0x95909ba3) {
                             switch sig
@@ -412,6 +422,7 @@ contract CoreRouter {
                             case 0x95909ba3 { result := 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42 } // MarketManagerModule.getMarketDebtPerShare()
                             case 0x95997c51 { result := 0xfb55317b42ff15c708ded3036fa17e13455835d28f48eb4a1161f7eb36131b84 } // CollateralModule.withdraw()
                             case 0x9851af01 { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.getNominatedPoolOwner()
+                            case 0x9b20dc89 { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.getPoolTotalDebt()
                             case 0x9dca362f { result := 0xfa6e4f9d0b597c15a039f6895e4aff81103501d0f8dfee25e41810095a2c8a97 } // AccountModule.createAccount()
                             case 0xa0778144 { result := 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea } // FeatureFlagModule.addToFeatureFlagAllowlist()
                             case 0xa0c12269 { result := 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42 } // MarketManagerModule.distributeDebtToPools()
@@ -429,22 +440,24 @@ contract CoreRouter {
                             case 0xaa8c6369 { result := 0xfb55317b42ff15c708ded3036fa17e13455835d28f48eb4a1161f7eb36131b84 } // CollateralModule.getLocks()
                             case 0xaaf10f42 { result := 0x65ed98bc6e8636d3e31c70259bddf83fd475024400983114ea42279adf1fd151 } // InitialModuleBundle.getImplementation()
                             case 0xb01ceccd { result := 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42 } // MarketManagerModule.getOracleManager()
+                            case 0xb49a3f9d { result := 0xfb75d6efbdb0632a474557551464395e52426684b8c8c47d571c945a5808c208 } // LiquidationModule.liquidateToTreasury()
                         leave
                     }
                     switch sig
                         case 0xb7746b59 { result := 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea } // FeatureFlagModule.removeFromFeatureFlagAllowlist()
                         case 0xb790a1ae { result := 0xebe07368dc01fbafdae6a99063c723758ec63a852be08716fb7da3afce8c0c3a } // PoolConfigurationModule.addApprovedPool()
+                        case 0xb7e3e68c { result := 0x96f05ac2ca619e781c735d9ffbef9721b963987bf0176c3762aa3fcd3564e293 } // VaultModule.migrateDelegation()
                         case 0xbaa2a264 { result := 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42 } // MarketManagerModule.getMarketTotalDebt()
                         case 0xbbdd7c5a { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.getPoolOwner()
                         case 0xbcae3ea0 { result := 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea } // FeatureFlagModule.getFeatureFlagDenyAll()
                         case 0xbe0b8e6f { result := 0x2dfc433b446bad088f600d3122d8b1f981b7228a0de166c47e010e3040036b42 } // MarketManagerModule.getMarketPools()
                         case 0xbf60c31d { result := 0xfa6e4f9d0b597c15a039f6895e4aff81103501d0f8dfee25e41810095a2c8a97 } // AccountModule.getAccountOwner()
-                        case 0xc2b0cf41 { result := 0xbf5819b9d5009a6da1beb7169eb0038218c2af0c6b8adc43a1caabdd075d53b7 } // MarketCollateralModule.getMarketCollateralAmount()
                     leave
                 }
                 if lt(sig, 0xdc0a5384) {
-                    if lt(sig, 0xce1b815f) {
+                    if lt(sig, 0xcadb09a5) {
                         switch sig
+                            case 0xc2b0cf41 { result := 0xbf5819b9d5009a6da1beb7169eb0038218c2af0c6b8adc43a1caabdd075d53b7 } // MarketCollateralModule.getMarketCollateralAmount()
                             case 0xc4b3410e { result := 0xc9e6687d1e56842076df50b114dde00e905e8bd11d86209c52d602d21d389959 } // RewardsManagerModule.getAvailableRewards()
                             case 0xc4d2aad3 { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.getPoolCollateralIssuanceRatio()
                             case 0xc6f79537 { result := 0x50df6d567ac8fa7c6e470909cc5f9ff73ab1ae21a4df8de212e92de61d533252 } // AssociatedSystemsModule.initOrUpgradeToken()
@@ -453,10 +466,10 @@ contract CoreRouter {
                             case 0xc7f62cda { result := 0x65ed98bc6e8636d3e31c70259bddf83fd475024400983114ea42279adf1fd151 } // InitialModuleBundle.simulateUpgradeTo()
                             case 0xca5bed77 { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.renouncePoolNomination()
                             case 0xcaab529b { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.createPool()
-                            case 0xcadb09a5 { result := 0xfa6e4f9d0b597c15a039f6895e4aff81103501d0f8dfee25e41810095a2c8a97 } // AccountModule.createAccount()
                         leave
                     }
                     switch sig
+                        case 0xcadb09a5 { result := 0xfa6e4f9d0b597c15a039f6895e4aff81103501d0f8dfee25e41810095a2c8a97 } // AccountModule.createAccount()
                         case 0xce1b815f { result := 0xef8d3c8ad250455883c6173269ba515637266b803a8393d270f664df6e2c6e80 } // UtilsModule.getTrustedForwarder()
                         case 0xcf635949 { result := 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea } // FeatureFlagModule.isFeatureAllowed()
                         case 0xd1fd27b3 { result := 0xef8d3c8ad250455883c6173269ba515637266b803a8393d270f664df6e2c6e80 } // UtilsModule.setConfig()
@@ -467,7 +480,7 @@ contract CoreRouter {
                         case 0xdbdea94c { result := 0xbf5819b9d5009a6da1beb7169eb0038218c2af0c6b8adc43a1caabdd075d53b7 } // MarketCollateralModule.configureMaximumMarketCollateral()
                     leave
                 }
-                if lt(sig, 0xed429cf7) {
+                if lt(sig, 0xef45148e) {
                     switch sig
                         case 0xdc0a5384 { result := 0x96f05ac2ca619e781c735d9ffbef9721b963987bf0176c3762aa3fcd3564e293 } // VaultModule.getPositionCollateralRatio()
                         case 0xdc0b3f52 { result := 0x0068474172de40722e6eab88b0e5c1cc53b5c16809593806d615e599ea81b581 } // CollateralConfigurationModule.getCollateralConfiguration()
@@ -477,10 +490,10 @@ contract CoreRouter {
                         case 0xe1b440d0 { result := 0xebe07368dc01fbafdae6a99063c723758ec63a852be08716fb7da3afce8c0c3a } // PoolConfigurationModule.removeApprovedPool()
                         case 0xe7098c0c { result := 0xebe07368dc01fbafdae6a99063c723758ec63a852be08716fb7da3afce8c0c3a } // PoolConfigurationModule.setPreferredPool()
                         case 0xeaeacda3 { result := 0xc9e6687d1e56842076df50b114dde00e905e8bd11d86209c52d602d21d389959 } // RewardsManagerModule.getAvailablePoolRewards()
+                        case 0xed429cf7 { result := 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea } // FeatureFlagModule.getDeniers()
                     leave
                 }
                 switch sig
-                    case 0xed429cf7 { result := 0x5317c086691248dec850380eef0d638878e899191f21032d9502a33d2aa8c9ea } // FeatureFlagModule.getDeniers()
                     case 0xef45148e { result := 0xfb55317b42ff15c708ded3036fa17e13455835d28f48eb4a1161f7eb36131b84 } // CollateralModule.getAccountCollateral()
                     case 0xefecf137 { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.getPoolConfiguration()
                     case 0xf544d66e { result := 0x96f05ac2ca619e781c735d9ffbef9721b963987bf0176c3762aa3fcd3564e293 } // VaultModule.getPosition()
@@ -488,6 +501,7 @@ contract CoreRouter {
                     case 0xf896503a { result := 0xef8d3c8ad250455883c6173269ba515637266b803a8393d270f664df6e2c6e80 } // UtilsModule.getConfigAddress()
                     case 0xf92bb8c9 { result := 0xef8d3c8ad250455883c6173269ba515637266b803a8393d270f664df6e2c6e80 } // UtilsModule.getConfigUint()
                     case 0xfd85c1f8 { result := 0x31c70f508334c093643f8c2497c016e26746f4d6df2be09bc6dd50bc1b2f6d63 } // PoolModule.getMinLiquidityRatio()
+                    case 0xfd93aa76 { result := 0x96f05ac2ca619e781c735d9ffbef9721b963987bf0176c3762aa3fcd3564e293 } // VaultModule.getLastDelegationTime()
                 leave
             }
 
